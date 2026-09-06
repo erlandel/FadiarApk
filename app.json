@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "fadiarApk",
+    "slug": "fadiarapk",
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true,
+      "typedRoutes": true
+    },
+    "scheme": "fadiar",
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://fadiar.com"
+        }
+      ],
+      "expo-status-bar",
+      "expo-image"
+    ],
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
