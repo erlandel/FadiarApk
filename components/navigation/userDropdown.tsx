@@ -79,7 +79,7 @@ export function UserDropdown() {
           icon: 'NextUilExit',
           onPress: () => {
             setIsOpen(false);
-            router.push('/(auth)/login');
+            router.replace('/(auth)/login');
           },
         },
         {
@@ -87,7 +87,7 @@ export function UserDropdown() {
           icon: 'MdiRegister',
           onPress: () => {
             setIsOpen(false);
-            router.push('/(auth)/register');
+            router.replace('/(auth)/register');
           },
         },
       ];

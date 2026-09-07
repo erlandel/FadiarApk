@@ -6,15 +6,16 @@ export function ProtectedScreen({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const auth = useAuthStore((s) => s.auth);
   const isHydrated = useAuthStore((s) => s.isHydrated);
+  const hasSession = Boolean(auth?.access_token && auth?.refresh_token);
 
   useEffect(() => {
     if (!isHydrated) return;
-    if (!auth) {
+    if (!hasSession) {
       router.replace('/(auth)/login');
     }
-  }, [auth, isHydrated]);
+  }, [hasSession, isHydrated, router]);
 
-  if (!isHydrated || !auth) return null;
+  if (!isHydrated || !hasSession) return null;
 
   return <>{children}</>;
 }

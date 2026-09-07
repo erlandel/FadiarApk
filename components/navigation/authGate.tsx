@@ -2,19 +2,20 @@ import { useEffect } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 
-export function AuthGate({ children }: { children: React.ReactNode }) {
+export function AuthGate() {
   const router = useRouter();
   const segments = useSegments();
   const auth = useAuthStore((s) => s.auth);
   const isHydrated = useAuthStore((s) => s.isHydrated);
+  const hasSession = Boolean(auth?.access_token && auth?.refresh_token);
 
   useEffect(() => {
     if (!isHydrated) return;
     const inAuthGroup = segments[0] === '(auth)';
-    if (auth && inAuthGroup) {
+    if (hasSession && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [auth, segments, isHydrated]);
+  }, [hasSession, segments, isHydrated, router]);
 
-  return <>{children}</>;
+  return null;
 }

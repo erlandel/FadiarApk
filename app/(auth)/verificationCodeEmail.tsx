@@ -22,7 +22,7 @@ export default function VerificationCodeEmailScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#e7e8e9]">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#e7e8e9' }}>
       <View className="flex-1 justify-center px-5">
         <View className="w-full rounded-2xl bg-white p-7 shadow-xl">
           <Text className="text-center text-3xl font-bold text-primary">Verificar cuenta</Text>

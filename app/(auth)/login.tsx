@@ -25,8 +25,11 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#e7e8e9]">
-      <ScrollView contentContainerClassName="flex-1 justify-center px-5">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#e7e8e9' }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20 }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View className="w-full rounded-2xl bg-white p-7 shadow-xl">
           <Text className="text-center text-3xl font-bold text-primary">
             Iniciar sesión

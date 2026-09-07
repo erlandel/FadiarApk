@@ -55,8 +55,11 @@ export default function RegisterScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#e7e8e9]">
-      <ScrollView contentContainerClassName="justify-center px-5 py-8">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#e7e8e9' }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 32 }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View className="w-full rounded-2xl bg-white p-7 shadow-xl">
           <Text className="text-center text-3xl font-bold text-primary">Registrarse</Text>
           <Text className="mt-1 text-center text-sm text-gray-600">
