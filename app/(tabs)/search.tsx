@@ -8,8 +8,8 @@ import { useUpcomingProducts } from '@/hooks/products/useUpcomingProducts';
 import { colors } from '@/lib/theme/colors';
 import type { Product } from '@/types/product';
 
-function normalize(text: string, fuzzy = false): string {
-  let t = text
+function normalizeExact(text: string): string {
+  return text
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
@@ -19,9 +19,13 @@ function normalize(text: string, fuzzy = false): string {
     .replace(/z/g, 's')
     .replace(/ll/g, 'y')
     .replace(/y/g, 'i')
-    .replace(/rr/g, 'r');
-  if (fuzzy) t = t.replace(/h/g, '');
-  return t.replace(/[^a-z0-9\s]/g, '').trim();
+    .replace(/rr/g, 'r')
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim();
+}
+
+function normalizeFuzzy(text: string): string {
+  return normalizeExact(text).replace(/h/g, '');
 }
 
 function levenshtein(a: string, b: string): number {
@@ -45,55 +49,61 @@ function levenshtein(a: string, b: string): number {
   return prev[m];
 }
 
-function score(query: string, product: Product) {
-  const qWords = normalize(query).split(/\s+/).filter(Boolean);
-  if (qWords.length === 0) return { total: 0, percentage: 0 };
-  const pExact = normalize([product.name, product.brand, product.categoria?.name ?? ''].join(' '));
-  const pFuzzy = normalize([product.name, product.brand, product.categoria?.name ?? ''].join(' '), true);
-  const pExactWords = pExact.split(/\s+/).filter(Boolean);
-  const pFuzzyWords = pFuzzy.split(/\s+/).filter(Boolean);
-
-  let exactMatches = 0;
-  let partialMatches = 0;
-  let fuzzyMatches = 0;
-  const used = new Set<number>();
-
-  for (const q of qWords) {
-    const idx = pExactWords.findIndex((w, i) => w === q && !used.has(i));
-    if (idx >= 0) {
-      exactMatches++;
-      used.add(idx);
-    }
+function calculateScore(query: string, product: Product) {
+  const qWords = normalizeExact(query).split(/\s+/).filter(Boolean);
+  if (qWords.length === 0) {
+    return { exactMatches: 0, fuzzyMatches: 0, total: 0, percentage: 0 };
   }
 
-  for (const q of qWords) {
-    if (q.length < 2) continue;
-    const partialIndex = pExactWords.findIndex(
-      (word, index) => !used.has(index) && (word.startsWith(q) || q.startsWith(word)),
-    );
-    if (partialIndex >= 0) {
-      partialMatches++;
-      used.add(partialIndex);
-      continue;
-    }
+  const productText = [product.name, product.brand, product.categoria?.name ?? ''].join(' ');
+  const pWordsExact = normalizeExact(productText).split(/\s+/).filter(Boolean);
+  const pWordsFuzzy = normalizeFuzzy(productText).split(/\s+/).filter(Boolean);
 
-    for (let i = 0; i < pFuzzyWords.length; i++) {
-      if (used.has(i)) continue;
-      const maxLen = Math.max(q.length, pFuzzyWords[i].length);
-      if (levenshtein(q, pFuzzyWords[i]) <= Math.max(1, Math.floor(maxLen / 3))) {
-        fuzzyMatches++;
-        used.add(i);
+  let exactMatches = 0;
+  let containedMatches = 0;
+  let fuzzyMatches = 0;
+  const usedIndices = new Set<number>();
+
+  for (const qWord of qWords) {
+    for (let i = 0; i < pWordsExact.length; i++) {
+      if (qWord === pWordsExact[i] && !usedIndices.has(i)) {
+        exactMatches++;
+        usedIndices.add(i);
         break;
       }
     }
   }
 
-  const matchedWords = exactMatches + partialMatches + fuzzyMatches;
-  return {
-    // Los matches exactos pesan más para ordenar, sin perder los difusos.
-    total: exactMatches * 3 + partialMatches * 2 + fuzzyMatches,
-    percentage: (matchedWords / qWords.length) * 100,
-  };
+  for (const qWord of qWords) {
+    if (qWord.length < 3) continue;
+    for (let i = 0; i < pWordsExact.length; i++) {
+      if (!usedIndices.has(i) && pWordsExact[i].includes(qWord)) {
+        containedMatches++;
+        usedIndices.add(i);
+        break;
+      }
+    }
+  }
+
+  if (exactMatches < qWords.length) {
+    for (const qWord of qWords) {
+      for (let i = 0; i < pWordsFuzzy.length; i++) {
+        if (usedIndices.has(i)) continue;
+
+        const maxLen = Math.max(qWord.length, pWordsFuzzy[i].length);
+        const threshold = Math.max(1, Math.floor(maxLen / 3));
+        if (levenshtein(qWord, pWordsFuzzy[i]) <= threshold) {
+          fuzzyMatches++;
+          usedIndices.add(i);
+          break;
+        }
+      }
+    }
+  }
+
+  const total = exactMatches * 3 + containedMatches * 2 + fuzzyMatches;
+  const percentage = ((exactMatches + containedMatches) / qWords.length) * 100;
+  return { exactMatches, containedMatches, fuzzyMatches, total, percentage };
 }
 
 export default function SearchScreen() {
@@ -108,16 +118,41 @@ export default function SearchScreen() {
   );
 
   const results = useMemo(() => {
-    if (!query.trim()) return allProducts;
-    return allProducts
-      .map((product, index) => ({ product, index, ...score(query, product) }))
-      .sort(
-        (a, b) =>
-          b.percentage - a.percentage ||
-          b.total - a.total ||
-          a.index - b.index,
-      )
-      .map(({ product }) => product);
+    const trimmed = query.trim();
+    if (!trimmed) return allProducts;
+
+    const scored = allProducts
+      .map((product) => ({ product, ...calculateScore(trimmed, product) }))
+      .filter((item) => item.total > 0);
+
+    const exact100 = scored.filter((item) => item.percentage === 100);
+    if (exact100.length > 0) return exact100.map((item) => item.product);
+
+    if (scored.length > 0) {
+      const maxTotal = Math.max(...scored.map((item) => item.total));
+      return scored
+        .filter((item) => item.total === maxTotal)
+        .map((item) => item.product);
+    }
+
+    const queryChars = [...new Set(normalizeFuzzy(trimmed).replace(/\s/g, '').split(''))];
+    if (queryChars.length === 0) return [];
+
+    const charScored = allProducts
+      .map((product) => {
+        const productText = normalizeFuzzy(
+          [product.name, product.brand, product.categoria?.name ?? ''].join(' '),
+        );
+        const matches = queryChars.filter((character) => productText.includes(character)).length;
+        return { product, matches };
+      })
+      .filter((item) => item.matches > 0);
+
+    if (charScored.length === 0) return [];
+    const maxCharMatches = Math.max(...charScored.map((item) => item.matches));
+    return charScored
+      .filter((item) => item.matches === maxCharMatches)
+      .map((item) => item.product);
   }, [query, allProducts]);
 
   return (
@@ -161,6 +196,7 @@ export default function SearchScreen() {
               <ProductCardSkeleton />
             </View>
           )}
+          contentContainerClassName="px-2 py-2"
         />
       ) : (
         <FlatList
@@ -196,10 +232,9 @@ export default function SearchScreen() {
               </Text>
             </View>
           }
-        
+          contentContainerClassName="px-2 py-2"
         />
       )}
-
     </View>
   );
 }

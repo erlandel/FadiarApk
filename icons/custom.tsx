@@ -37,6 +37,17 @@ export function HugeiconsUserAi(props: Props) {
   );
 }
 
+export function NextUilExit(props: Props) {
+  return (
+    <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
+      <Path
+        fill="currentColor"
+        d="M4 12a1 1 0 0 0 1 1h7.59l-2.3 2.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l4-4a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76a1 1 0 0 0-.21-.33l-4-4a1 1 0 1 0-1.42 1.42l2.3 2.29H5a1 1 0 0 0-1 1M17 2H7a3 3 0 0 0-3 3v3a1 1 0 0 0 2 0V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3a1 1 0 0 0-2 0v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3"
+      />
+    </Svg>
+  );
+}
+
 export function MaterialSymbolsMenu(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
@@ -190,6 +201,22 @@ export function EmojioneDepartmentStore(props: Props) {
       <Path fill="#62727a" d="M16 47c-.6 0-1 .6-1 1.3v2c0 .7.4 1.7.8 2.1l.4.4c.4.4.8.2.8-.5v-3.9c0-.8-.5-1.4-1-1.4" />
       <Path fill="#3e4347" d="M64 18H0V2C0 .9.9 0 2 0h60c1.1 0 2 .9 2 2z" />
       <Path fill="#e8e8e8" d="M3 2c-.5 0-1 .5-1 1v12c0 .6.5 1 1 1h58c.5 0 1-.4 1-1V3c0-.5-.5-1-1-1z" />
+    </Svg>
+  );
+}
+
+export function MdiRegister(props: Props) {
+  return (
+    <Svg
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <Path
+        fill="currentColor"
+        d="M15 14c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m6 2a4 4 0 0 0 4-4a4 4 0 0 0-4-4a4 4 0 0 0-4 4a4 4 0 0 0 4 4"
+      />
     </Svg>
   );
 }

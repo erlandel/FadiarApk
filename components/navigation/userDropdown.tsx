@@ -19,8 +19,10 @@ type Item = {
 
 function ItemIcon({ name }: { name: Item['icon'] }) {
   if (name === 'UserCircle') return <Icon name="CircleUser" size={20} color={colors.muted} />;
-  if (name === 'NextUilExit') return <CustomIcon name="HugeiconsUserAi" width={20} height={20} color={colors.muted} />;
+  if (name === 'NextUilExit') return <CustomIcon name="NextUilExit" width={20} height={20} color={colors.muted} />;
   if (name === 'UilExit') return <Icon name="LogOut" size={20} color="#EB0C0C" />;
+  if (name === 'MdiRegister')
+    return <CustomIcon name="MdiRegister" width={20} height={20} color={colors.muted} />;
   return <Icon name="UserRoundPlus" size={20} color={colors.muted} />;
 }
 
@@ -74,7 +76,7 @@ export function UserDropdown() {
     : [
         {
           label: 'Iniciar sesión',
-          icon: 'UserCircle',
+          icon: 'NextUilExit',
           onPress: () => {
             setIsOpen(false);
             router.push('/(auth)/login');
@@ -101,26 +103,40 @@ export function UserDropdown() {
       </Pressable>
 
       {isOpen ? (
-        <View className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg">
-          {items.map((item) => (
-            <Pressable
-              key={item.label}
-              onPress={item.onPress}
-              className="flex-row items-center gap-2 rounded-lg p-3 active:bg-surface"
-            >
-              <ItemIcon name={item.icon} />
-              <Text
-                className={
-                  item.destructive
-                    ? 'text-sm font-medium text-error'
-                    : 'text-sm font-medium text-muted'
-                }
+        <>
+          <Pressable
+            accessibilityLabel="Cerrar menú de usuario"
+            onPress={() => setIsOpen(false)}
+            style={{
+              position: 'absolute',
+              top: -1000,
+              left: -1000,
+              right: -1000,
+              bottom: -1000,
+              zIndex: 40,
+            }}
+          />
+          <View className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg">
+            {items.map((item) => (
+              <Pressable
+                key={item.label}
+                onPress={item.onPress}
+                className="flex-row items-center gap-2 rounded-lg p-3 active:bg-surface"
               >
-                {item.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
+                <ItemIcon name={item.icon} />
+                <Text
+                  className={
+                    item.destructive
+                      ? 'text-sm font-medium text-error'
+                      : 'text-sm font-medium text-muted'
+                  }
+                >
+                  {item.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
       ) : null}
     </View>
   );
