@@ -2,12 +2,9 @@ import { useMemo, useState } from 'react';
 import { FlatList, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
-import { ProductFilters } from '@/components/product/productFilters';
 import { Icon } from '@/icons/lucideIcon';
 import { useInventory } from '@/hooks/products/useInventory';
 import { useUpcomingProducts } from '@/hooks/products/useUpcomingProducts';
-import { useFiltersStore } from '@/store/filtersStore';
-import { normalizeText } from '@/utils/format';
 import { colors } from '@/lib/theme/colors';
 import type { Product } from '@/types/product';
 
@@ -102,10 +99,8 @@ function score(query: string, product: Product) {
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { data: inventoryData, isLoading } = useInventory();
   const { data: upcomingProducts = [] } = useUpcomingProducts();
-  const selectedCategories = useFiltersStore((state) => state.selectedCategories);
 
   const allProducts = useMemo<Product[]>(
     () => [...(inventoryData?.products ?? []), ...upcomingProducts.map((p) => ({ ...p, isPreSale: true }))],
@@ -113,17 +108,8 @@ export default function SearchScreen() {
   );
 
   const results = useMemo(() => {
-    const filteredProducts = selectedCategories.length
-      ? allProducts.filter((product) =>
-          selectedCategories.some(
-            (category) =>
-              normalizeText(category) === normalizeText(product.categoria?.name ?? ''),
-          ),
-        )
-      : allProducts;
-
-    if (!query.trim()) return filteredProducts;
-    return filteredProducts
+    if (!query.trim()) return allProducts;
+    return allProducts
       .map((product, index) => ({ product, index, ...score(query, product) }))
       .sort(
         (a, b) =>
@@ -132,25 +118,17 @@ export default function SearchScreen() {
           a.index - b.index,
       )
       .map(({ product }) => product);
-  }, [query, allProducts, selectedCategories]);
-
-  const availableCategories = useMemo(() => {
-    const map = new Map<string, string>();
-    allProducts.forEach((product) => {
-      const name = product.categoria?.name;
-      if (name) map.set(normalizeText(name), name);
-    });
-    return Array.from(map.entries()).map(([key, label]) => ({ key, label }));
-  }, [allProducts]);
+  }, [query, allProducts]);
 
   return (
-    <View className="flex-1  px-2 my-2">
-      <View
-        className={`flex-row items-center rounded-2xl border bg-surface px-3 ${
-          isFocused ? 'border-primary' : 'border-transparent'
-        }`}
-      >
-        <View className="h-12 flex-1 flex-row items-center">
+    <View className="flex-1 bg-white">
+      <View className="flex-row items-center gap-5 bg-primary px-4 py-3">
+        <View
+          className={`h-12 flex-1 flex-row items-center rounded-2xl bg-white/80
+             px-4 ${
+            isFocused ? 'border border-primary' : ''
+          }`}
+        >
           <Icon name="Search" size={22} color={colors.primary} />
           <TextInput
             value={query}
@@ -169,24 +147,6 @@ export default function SearchScreen() {
             </Pressable>
           ) : null}
         </View>
-
-        <View className="mx-2 h-6 w-px bg-surfaceBorder" />
-
-        <Pressable
-          onPress={() => {
-            Keyboard.dismiss();
-            setIsFilterOpen(true);
-          }}
-          className="relative h-12 items-center justify-center px-1"
-          accessibilityLabel="Abrir filtros"
-        >
-          <Icon name="Funnel" size={22} color={colors.primary} />
-          {selectedCategories.length > 0 ? (
-            <View className="absolute -right-1 top-1 h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1">
-              <Text className="text-xs font-bold text-white">{selectedCategories.length}</Text>
-            </View>
-          ) : null}
-        </Pressable>
       </View>
 
       {isLoading ? (
@@ -240,11 +200,6 @@ export default function SearchScreen() {
         />
       )}
 
-      <ProductFilters
-        categories={availableCategories}
-        visible={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-      />
     </View>
   );
 }
