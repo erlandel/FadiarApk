@@ -69,6 +69,9 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
     return normalizedPath === normalizedHref;
   };
 
+  // Único punto de verdad: solo estamos "en productos" si la ruta actual lo confirma.
+  const isOnProductsRoute = checkActive('/(tabs)/products');
+
   const availableCategories = useMemo(() => {
     const map = new Map<string, string>();
     (inventoryData?.products ?? []).forEach((p: any) => {
@@ -96,7 +99,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
     setIsOpen(false);
     setIsProductsSubmenuOpen(false);
 
-    if (!checkActive('/(tabs)/products')) {
+    if (!isOnProductsRoute) {
       router.push('/(tabs)/products');
     }
   };
@@ -241,7 +244,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                 setSelectedCategories([]);
                                 setIsOpen(false);
                                 setIsProductsSubmenuOpen(false);
-                                if (!checkActive('/(tabs)/products')) {
+                                if (!isOnProductsRoute) {
                                   router.push('/(tabs)/products');
                                 } else {
                                   setShouldScrollToProducts(true);
@@ -251,14 +254,14 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                             >
                               <View
                                 className={`h-4 w-4 rounded-full border-2 border-dashed bg-transparent ${
-                                  selectedCategories.length === 0
+                                  isOnProductsRoute && selectedCategories.length === 0
                                     ? 'border-accent'
                                     : 'border-gray-300'
                                 }`}
                               />
                               <Text
                                 className={
-                                  selectedCategories.length === 0
+                                  isOnProductsRoute && selectedCategories.length === 0
                                     ? 'font-extrabold text-accent'
                                     : 'font-bold text-gray-600'
                                 }
@@ -268,7 +271,8 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                             </Pressable>
 
                             {availableCategories.map((cat) => {
-                              const isSelected = selectedCategories.includes(cat.label);
+                              const isSelected =
+                                isOnProductsRoute && selectedCategories.includes(cat.label);
                               return (
                                 <Pressable
                                   key={cat.key}
