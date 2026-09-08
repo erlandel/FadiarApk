@@ -60,7 +60,7 @@ export default function ProductsScreen() {
           className="absolute inset-0 z-10"
         />
       ) : null}
-      <View className="flex-row items-center gap-5  bg-primary px-2 py-2  ">
+      <View className="flex-row items-center justify-between  bg-primary px-4 py-2  ">
         {tiendas.length > 0 ? (
           <StoreSelector
             options={storeOptions}
@@ -75,7 +75,7 @@ export default function ProductsScreen() {
 
         <Pressable
           onPress={() => setIsFilterOpen(true)}
-          className="relative  flex-row items-center gap-1.5 rounded-xl bg-accent px-4 py-3 active:opacity-90"
+          className="relative  flex-row items-center gap-1.5 rounded-xl bg-accent px-4 h-11 active:opacity-90"
         >
           <Icon name="Funnel" size={18} color={colors.primary} />
           <Text className="text-sm font-bold text-primary">Filtros</Text>

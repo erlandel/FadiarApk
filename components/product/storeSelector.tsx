@@ -42,19 +42,19 @@ function StoreSelectorComponent({
   if (!selectedOption) return null;
 
   return (
-    <View className="relative z-20 flex-1 ">
+    <View className="relative z-20 flex-1 w-full max-w-60 ">
       <Pressable
         onPress={toggleOpen}
-        className="h-12 flex-row  items-center justify-between rounded-xl bg-white/5  px-3 py-3 active:bg-white/15"
+        className="h-11 flex-row  items-center justify-between rounded-xl bg-white/5  px-3 py-3 active:bg-white/15"
       >
-        <View className="mr-2 flex-1 flex-row items-center gap-2.5">
+        <View className="mr-2 flex-1 flex-row items-center gap-2">
           <View className="h-2 w-2 rounded-full bg-accent" />
 
           <View className="flex-1">
             <Text className="text-xs font-semibold uppercase tracking-wider text-white/70">
               Tienda Activa
             </Text>
-            <Text numberOfLines={1} className="text-lg font-bold text-white">
+            <Text numberOfLines={1} className=" font-bold text-white">
               {selectedOption.name}
             </Text>
           </View>
@@ -68,7 +68,7 @@ function StoreSelectorComponent({
       </Pressable>
 
       {isOpen ? (
-        <View className="absolute  left-0 right-0 top-15 overflow-hidden rounded-b-2xl bg-primary shadow-lg">
+        <View className="absolute  left-0 right-0 top-13.5 overflow-hidden rounded-b-2xl bg-primary shadow-lg">
           <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} className="max-h-52">
             {options.map((option) => {
               const selected = option.id === selectedId;
@@ -85,7 +85,7 @@ function StoreSelectorComponent({
                   )}
                 >
                   {selected ? <View className="h-2 w-2 rounded-full bg-accent" /> : <View className="h-2 w-2" />}
-                  <Text className={cn('text-base', selected ? 'font-bold text-white' : 'text-white/80')}>
+                  <Text className={cn('text-md', selected ? ' text-white' : 'text-white/80')}>
                     {option.name}
                   </Text>
                 </Pressable>
