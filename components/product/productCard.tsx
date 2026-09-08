@@ -112,10 +112,10 @@ function ProductCardComponent({
     imageUri ? (
       <Image
         source={{ uri: imageSources[imageSourceIndex] ?? imageUri }}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', backgroundColor: '#F5F7FA' }}
         contentFit="contain"
         cachePolicy="memory-disk"
-        transition={200}
+        transition={0}
         onError={(error) => {
           if (imageSourceIndex < imageSources.length - 1) {
             setImageSourceIndex((current) => current + 1);

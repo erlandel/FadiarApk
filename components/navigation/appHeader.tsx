@@ -18,7 +18,11 @@ export function AppHeader({ onMenuPress }: AppHeaderProps) {
   return (
     <View
       className="border-b border-gray-100 bg-white px-4 pb-3"
-      style={{ paddingTop: Math.max(insets.top, 16) }}
+      style={{
+        paddingTop: Math.max(insets.top, 16),
+        zIndex: 1000,
+        elevation: 1000,
+      }}
       onTouchStart={Keyboard.dismiss}>
       <View className="flex-row items-center">
         <Pressable onPress={onMenuPress} hitSlop={8} className="mr-3">

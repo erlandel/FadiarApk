@@ -93,7 +93,7 @@ export function UserDropdown() {
       ];
 
   return (
-    <View className="relative z-50">
+    <View className="relative z-50" style={{ zIndex: 100, elevation: 100 }}>
       <Pressable onPress={() => setIsOpen((v) => !v)} hitSlop={8}>
         {auth?.access_token ? (
           <CustomIcon name="HugeiconsUserAi" width={24} height={24} color={colors.black} />
@@ -113,10 +113,12 @@ export function UserDropdown() {
               left: -1000,
               right: -1000,
               bottom: -1000,
-              zIndex: 40,
+              zIndex: 0,
             }}
           />
-          <View className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg">
+          <View
+            className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg"
+            style={{ zIndex: 1, elevation: 8 }}>
             {items.map((item) => (
               <Pressable
                 key={item.label}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
 import { Icon } from '@/icons/lucideIcon';
@@ -9,33 +10,53 @@ import { useUpcomingProducts } from '@/hooks/products/useUpcomingProducts';
 import { colors } from '@/lib/theme/colors';
 import type { Product } from '@/types/product';
 
+/**
+ * Normaliza texto quitando acentos, mayúsculas y signos, SIN colapso
+ * fonético. Se usa para matches exactos (ej: "casa" no debe confundirse
+ * con "caza" en el paso exacto).
+ */
 function normalizeExact(text: string): string {
   return text
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/k/g, 'c')
-    .replace(/q/g, 'c')
-    .replace(/v/g, 'b')
-    .replace(/z/g, 's')
-    .replace(/ll/g, 'y')
-    .replace(/y/g, 'i')
-    .replace(/rr/g, 'r')
-    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-function normalizeFuzzy(text: string): string {
-  return normalizeExact(text).replace(/h/g, '');
+/**
+ * Colapsa sonidos que se confunden al escribir en español (b/v, s/z,
+ * ll/y/i, k/q/c, h muda, rr/r) en un solo pase secuencial y
+ * determinista, evitando que una sustitución contamine el resultado
+ * de la siguiente (ej: "ll" -> "y" -> "i" encadenado sin control).
+ */
+function phoneticCollapse(text: string): string {
+  return text
+    .replace(/ll/g, 'y')
+    .replace(/rr/g, 'r')
+    .replace(/qu/g, 'c')
+    .replace(/[kq]/g, 'c')
+    .replace(/[vb]/g, 'b')
+    .replace(/[sz]/g, 's')
+    .replace(/[yi]/g, 'i')
+    .replace(/h/g, '');
 }
 
-function levenshtein(a: string, b: string): number {
+function normalizeFuzzy(text: string): string {
+  return phoneticCollapse(normalizeExact(text));
+}
+
+function levenshteinDistance(a: string, b: string): number {
   const n = a.length;
   const m = b.length;
   if (n === 0) return m;
   if (m === 0) return n;
-  let prev = Array.from({ length: m + 1 }, (_, j) => j);
+
+  let prev = new Array<number>(m + 1);
   let curr = new Array<number>(m + 1);
+  for (let j = 0; j <= m; j++) prev[j] = j;
+
   for (let i = 1; i <= n; i++) {
     curr[0] = i;
     const ai = a.charCodeAt(i - 1);
@@ -50,18 +71,32 @@ function levenshtein(a: string, b: string): number {
   return prev[m];
 }
 
-function calculateScore(query: string, product: Product) {
-  const qWords = normalizeExact(query).split(/\s+/).filter(Boolean);
-  if (qWords.length === 0) {
-    return { exactMatches: 0, fuzzyMatches: 0, total: 0, percentage: 0 };
-  }
+/** Umbral de tolerancia según longitud de palabra. Palabras cortas
+ *  (3-4 letras, ej: "olla" -> "oia") necesitan mínimo 1 para tolerar
+ *  plurales o variantes de escritura; floor(len/3) las deja en 0. */
+function fuzzyThreshold(maxLen: number): number {
+  if (maxLen <= 4) return 1;
+  return Math.max(1, Math.floor(maxLen / 3));
+}
 
-  const productText = [product.name, product.brand, product.categoria?.name ?? ''].join(' ');
-  const pWordsExact = normalizeExact(productText).split(/\s+/).filter(Boolean);
-  const pWordsFuzzy = normalizeFuzzy(productText).split(/\s+/).filter(Boolean);
+function calculateScore(query: string, product: Product) {
+  const qWords = normalizeExact(query)
+    .split(/\s+/)
+    .filter((w) => w.length > 0);
+  if (qWords.length === 0) return { exactMatches: 0, fuzzyMatches: 0, total: 0, percentage: 0 };
+
+  const pTextExact = normalizeExact(
+    [product.name, product.brand, product.categoria?.name ?? ''].join(' ')
+  );
+  const pTextFuzzy = normalizeFuzzy(
+    [product.name, product.brand, product.categoria?.name ?? ''].join(' ')
+  );
+
+  const pWordsExact = pTextExact.split(/\s+/).filter((w) => w.length > 0);
+  const pWordsFuzzy = pTextFuzzy.split(/\s+/).filter((w) => w.length > 0);
+  const qWordsFuzzy = qWords.map((w) => phoneticCollapse(w));
 
   let exactMatches = 0;
-  let containedMatches = 0;
   let fuzzyMatches = 0;
   const usedIndices = new Set<number>();
 
@@ -75,36 +110,29 @@ function calculateScore(query: string, product: Product) {
     }
   }
 
-  for (const qWord of qWords) {
-    if (qWord.length < 3) continue;
-    for (let i = 0; i < pWordsExact.length; i++) {
-      if (!usedIndices.has(i) && pWordsExact[i].includes(qWord)) {
-        containedMatches++;
-        usedIndices.add(i);
-        break;
-      }
-    }
-  }
-
   if (exactMatches < qWords.length) {
-    for (const qWord of qWords) {
+    qWords.forEach((_, qIdx) => {
+      const qWordFuzzy = qWordsFuzzy[qIdx];
       for (let i = 0; i < pWordsFuzzy.length; i++) {
         if (usedIndices.has(i)) continue;
 
-        const maxLen = Math.max(qWord.length, pWordsFuzzy[i].length);
-        const threshold = Math.max(1, Math.floor(maxLen / 3));
-        if (levenshtein(qWord, pWordsFuzzy[i]) <= threshold) {
+        const maxLen = Math.max(qWordFuzzy.length, pWordsFuzzy[i].length);
+        const threshold = fuzzyThreshold(maxLen);
+        const dist = levenshteinDistance(qWordFuzzy, pWordsFuzzy[i]);
+
+        if (dist <= threshold) {
           fuzzyMatches++;
           usedIndices.add(i);
           break;
         }
       }
-    }
+    });
   }
 
-  const total = exactMatches * 3 + containedMatches * 2 + fuzzyMatches;
-  const percentage = ((exactMatches + containedMatches) / qWords.length) * 100;
-  return { exactMatches, containedMatches, fuzzyMatches, total, percentage };
+  const total = exactMatches + fuzzyMatches;
+  const percentage = (exactMatches / qWords.length) * 100;
+
+  return { exactMatches, fuzzyMatches, total, percentage };
 }
 
 export default function SearchScreen() {
@@ -147,16 +175,21 @@ export default function SearchScreen() {
 
     const scored = allProducts
       .map((product) => ({ product, ...calculateScore(trimmed, product) }))
-      .filter((item) => item.total > 0);
+      .filter((s) => s.total > 0);
 
-    const exact100 = scored.filter((item) => item.percentage === 100);
-    if (exact100.length > 0) return exact100.map((item) => item.product);
-
-    if (scored.length > 0) {
-      const maxTotal = Math.max(...scored.map((item) => item.total));
-      return scored.filter((item) => item.total === maxTotal).map((item) => item.product);
+    // Si hay productos con 100% de coincidencia exacta, mostrar SOLO esos
+    const exact100 = scored.filter((s) => s.percentage === 100);
+    if (exact100.length > 0) {
+      return exact100.map((s) => s.product);
     }
 
+    // Si hay coincidencias (fuzzy o parciales), mostrar los de mayor total
+    if (scored.length > 0) {
+      const maxTotal = Math.max(...scored.map((s) => s.total));
+      return scored.filter((s) => s.total === maxTotal).map((s) => s.product);
+    }
+
+    // Fallback: coincidencia por caracteres
     const queryChars = [...new Set(normalizeFuzzy(trimmed).replace(/\s/g, '').split(''))];
     if (queryChars.length === 0) return [];
 
@@ -227,8 +260,14 @@ export default function SearchScreen() {
           keyboardShouldPersistTaps="handled"
           onTouchStart={Keyboard.dismiss}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View className="flex-1 px-1 py-2">
+          renderItem={({ item, index }) => (
+            <Animated.View
+              entering={FadeInDown.withInitialValues({ opacity: 1 })
+                .duration(420)
+                .delay(Math.min(index % 6, 5) * 55)
+                .springify()
+                .damping(18)}
+              className="flex-1 px-1 py-2">
               <ProductCard
                 productId={item.id}
                 title={item.name}
@@ -243,7 +282,7 @@ export default function SearchScreen() {
                 tiendaId={item.tiendaId}
                 isPreSale={item.isPreSale}
               />
-            </View>
+            </Animated.View>
           )}
           ListEmptyComponent={
             <View className="items-center py-20">
