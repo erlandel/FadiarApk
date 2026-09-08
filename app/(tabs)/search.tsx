@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
@@ -109,8 +109,18 @@ function calculateScore(query: string, product: Product) {
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<TextInput>(null);
   const { data: inventoryData, isLoading } = useInventory();
   const { data: upcomingProducts = [] } = useUpcomingProducts();
+
+  useEffect(() => {
+    const focusInput = () => {
+      inputRef.current?.focus();
+    };
+
+    const timeout = setTimeout(focusInput, 150);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const allProducts = useMemo<Product[]>(
     () => [...(inventoryData?.products ?? []), ...upcomingProducts.map((p) => ({ ...p, isPreSale: true }))],
@@ -166,11 +176,13 @@ export default function SearchScreen() {
         >
           <Icon name="Search" size={22} color={colors.primary} />
           <TextInput
+            ref={inputRef}
             value={query}
             onChangeText={setQuery}
             placeholder="Buscar productos..."
             placeholderTextColor="#64748B"
             autoCapitalize="none"
+            autoFocus
             returnKeyType="search"
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
