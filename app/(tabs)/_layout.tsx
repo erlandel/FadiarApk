@@ -16,10 +16,10 @@ export default function TabsLayout() {
         screenOptions={{
           headerShown: false,
           freezeOnBlur: true,
+          tabBarHideOnKeyboard: true,
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.muted,
-        }}
-      >
+        }}>
         <Tabs.Screen
           name="index"
           options={{

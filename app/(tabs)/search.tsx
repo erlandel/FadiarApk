@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
 import { Icon } from '@/icons/lucideIcon';
@@ -112,19 +113,32 @@ export default function SearchScreen() {
   const inputRef = useRef<TextInput>(null);
   const { data: inventoryData, isLoading } = useInventory();
   const { data: upcomingProducts = [] } = useUpcomingProducts();
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 150);
+      return () => clearTimeout(timeout);
+    }, [])
+  );
 
   useEffect(() => {
-    const focusInput = () => {
-      inputRef.current?.focus();
-    };
-
-    const timeout = setTimeout(focusInput, 150);
-    return () => clearTimeout(timeout);
-  }, []);
+    const unsubscribe = navigation.addListener('tabPress' as never, () => {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const allProducts = useMemo<Product[]>(
-    () => [...(inventoryData?.products ?? []), ...upcomingProducts.map((p) => ({ ...p, isPreSale: true }))],
-    [inventoryData, upcomingProducts],
+    () => [
+      ...(inventoryData?.products ?? []),
+      ...upcomingProducts.map((p) => ({ ...p, isPreSale: true })),
+    ],
+    [inventoryData, upcomingProducts]
   );
 
   const results = useMemo(() => {
@@ -140,9 +154,7 @@ export default function SearchScreen() {
 
     if (scored.length > 0) {
       const maxTotal = Math.max(...scored.map((item) => item.total));
-      return scored
-        .filter((item) => item.total === maxTotal)
-        .map((item) => item.product);
+      return scored.filter((item) => item.total === maxTotal).map((item) => item.product);
     }
 
     const queryChars = [...new Set(normalizeFuzzy(trimmed).replace(/\s/g, '').split(''))];
@@ -151,7 +163,7 @@ export default function SearchScreen() {
     const charScored = allProducts
       .map((product) => {
         const productText = normalizeFuzzy(
-          [product.name, product.brand, product.categoria?.name ?? ''].join(' '),
+          [product.name, product.brand, product.categoria?.name ?? ''].join(' ')
         );
         const matches = queryChars.filter((character) => productText.includes(character)).length;
         return { product, matches };
@@ -160,20 +172,16 @@ export default function SearchScreen() {
 
     if (charScored.length === 0) return [];
     const maxCharMatches = Math.max(...charScored.map((item) => item.matches));
-    return charScored
-      .filter((item) => item.matches === maxCharMatches)
-      .map((item) => item.product);
+    return charScored.filter((item) => item.matches === maxCharMatches).map((item) => item.product);
   }, [query, allProducts]);
 
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-row items-center gap-5 bg-primary px-4 py-3">
+      <View className="bg-primary flex-row items-center gap-5 px-4 py-3">
         <View
-          className={`h-12 flex-1 flex-row items-center rounded-2xl bg-white/80
-             px-4 ${
-            isFocused ? 'border border-primary' : ''
-          }`}
-        >
+          className={`h-12 flex-1 flex-row items-center rounded-2xl bg-white/80 px-4 ${
+            isFocused ? 'border-primary border' : ''
+          }`}>
           <Icon name="Search" size={22} color={colors.primary} />
           <TextInput
             ref={inputRef}
@@ -182,14 +190,16 @@ export default function SearchScreen() {
             placeholder="Buscar productos..."
             placeholderTextColor="#64748B"
             autoCapitalize="none"
-            autoFocus
             returnKeyType="search"
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="ml-2 flex-1 py-0 text-[15px] text-text"
+            className="text-text ml-2 flex-1 py-0 text-[15px]"
           />
           {query.length > 0 ? (
-            <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityLabel="Limpiar búsqueda">
+            <Pressable
+              onPress={() => setQuery('')}
+              hitSlop={8}
+              accessibilityLabel="Limpiar búsqueda">
               <Icon name="X" size={18} color={colors.muted} />
             </Pressable>
           ) : null}
@@ -237,7 +247,7 @@ export default function SearchScreen() {
           )}
           ListEmptyComponent={
             <View className="items-center py-20">
-              <Text className="text-base text-muted">
+              <Text className="text-muted text-base">
                 {query.trim()
                   ? `No se encontraron productos para "${query}"`
                   : 'No hay productos disponibles'}

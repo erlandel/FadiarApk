@@ -23,6 +23,9 @@
     ],
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "android": {
+      "softwareKeyboardLayoutMode": "pan"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
