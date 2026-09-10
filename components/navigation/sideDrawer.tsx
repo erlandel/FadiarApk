@@ -21,8 +21,8 @@ const LINKS = [
   { href: '/about', label: 'Sobre Nosotros', available: false },
   { href: '/faq', label: 'Preguntas Frecuentes', available: false },
   { href: '/warranty', label: 'Garantía', available: false },
-  { href: '/shipping', label: 'Envíos', available: false },
-  { href: '/contact', label: 'Contacto', available: false },
+  { href: '/(tabs)/shipping', label: 'Envíos', available: true },
+  { href: '/(tabs)/contact', label: 'Contacto', available: true },
 ] as const;
 
 export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {

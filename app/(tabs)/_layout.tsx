@@ -42,14 +42,14 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name="shipping"
           options={{
             title: 'Envíos',
             tabBarIcon: ({ color, size }) => <Icon name="Truck" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
-          name="orders"
+          name="contact"
           options={{
             title: 'Contacto',
             tabBarIcon: ({ color, size }) => <Icon name="Phone" size={size} color={color} />,
