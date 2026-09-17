@@ -74,7 +74,7 @@ export function useConfirmOrder() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
-      router.replace('/(tabs)/orders');
+      router.replace('/(tabs)/orders' as any);
     },
     onError: (err: any) => {
       if (err?.message === 'NO_AUTH') {

@@ -9,7 +9,7 @@ import {
   type RecoverPasswordFormData,
 } from '@/validations/auth';
 import { useRecoverPassword } from '@/hooks/auth/useRecoverPassword';
-import { InputAuth } from '@/components/forms/inputAuth';
+import { InputAuth } from '@/components/input/inputAuth';
 import { Button } from '@/components/primitives/button';
 
 export default function RecoverPasswordScreen() {

@@ -24,7 +24,7 @@ export function AppHeader({ onMenuPress }: AppHeaderProps) {
         elevation: 1000,
       }}
       onTouchStart={Keyboard.dismiss}>
-      <View className="flex-row items-center">
+      <View className="flex-row items-center gap-3">
         <Pressable onPress={onMenuPress} hitSlop={8} className="mr-3">
           <CustomIcon name="MaterialSymbolsMenu" width={24} height={24} color={colors.black} />
         </Pressable>
@@ -33,16 +33,16 @@ export function AppHeader({ onMenuPress }: AppHeaderProps) {
         <Pressable
           onPress={() => router.push('/modal/location')}
           hitSlop={8}
-          className="mr-4 ml-auto">
+          className=" ml-auto">
           <CustomIcon name="AkarIconsLocation" width={22} height={22} color={colors.primary} />
         </Pressable>
 
-        <UserDropdown />
+
 
         <Pressable
           onPress={() => router.push('/(checkout)/cart1')}
           hitSlop={8}
-          className="relative ml-4">
+          className="relative ">
           <CustomIcon name="TablerShoppingCart" width={26} height={26} color={colors.black} />
           {totalItems > 0 && (
             <View className="bg-error absolute -top-1 -right-2 h-5 w-5 items-center justify-center rounded-full">

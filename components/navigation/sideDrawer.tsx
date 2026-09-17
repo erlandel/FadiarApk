@@ -16,7 +16,6 @@ export interface SideDrawerProps {
 }
 
 const LINKS = [
-  { href: '/(tabs)', label: 'Inicio', available: true },
   { href: '/(tabs)/products', label: 'Productos', available: true },
   { href: '/about', label: 'Sobre Nosotros', available: false },
   { href: '/faq', label: 'Preguntas Frecuentes', available: false },
@@ -113,10 +112,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
       setIsProductsSubmenuOpen((v) => !v);
       return;
     }
-    if (link.label === 'Inicio') {
-      setSelectedCategories([]);
-      setShouldScrollToProducts(false);
-    }
+
     setIsOpen(false);
     router.push(link.href as any);
   };

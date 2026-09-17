@@ -55,7 +55,7 @@ export function UserDropdown() {
           icon: 'UserCircle',
           onPress: () => {
             setIsOpen(false);
-            router.push('/(tabs)/profile');
+            router.push('/(tabs)/profile' as any);
           },
         },
         {
@@ -63,7 +63,7 @@ export function UserDropdown() {
           icon: 'NextUilExit',
           onPress: () => {
             setIsOpen(false);
-            router.push('/(tabs)/orders');
+            router.push('/(tabs)/orders' as any);
           },
         },
         {

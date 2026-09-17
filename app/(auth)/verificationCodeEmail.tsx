@@ -5,7 +5,7 @@ import { useRouter, Link } from 'expo-router';
 import { asyncStorage } from '@/lib/storage/storage';
 import { useVerifyEmail } from '@/hooks/auth/useVerifyEmail';
 import { useResendCode } from '@/hooks/auth/useResendCode';
-import { CodeInput } from '@/components/forms/codeInput';
+import { CodeInput } from '@/components/input/codeInput';
 import { Button } from '@/components/primitives/button';
 
 export default function VerificationCodeEmailScreen() {

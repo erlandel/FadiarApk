@@ -8,7 +8,7 @@ import {
   type RecoverPasswordFormData,
 } from '@/validations/auth';
 import { asyncStorage } from '@/lib/storage/storage';
-import { InputAuth } from '@/components/forms/inputAuth';
+import { InputAuth } from '@/components/input/inputAuth';
 import { Button } from '@/components/primitives/button';
 
 export default function EnterEmailScreen() {

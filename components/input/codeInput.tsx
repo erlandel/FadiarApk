@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { cn } from '@/utils/cn';
-import { colors } from '@/lib/theme/colors';
 
 export interface CodeInputProps {
   length?: number;

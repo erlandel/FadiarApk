@@ -5,7 +5,7 @@ import { useBestSelling } from '@/hooks/products/useBestSelling';
 import { useNineOffers } from '@/hooks/products/useNineOffers';
 import { useUpcomingProducts } from '@/hooks/products/useUpcomingProducts';
 import { useInventory } from '@/hooks/products/useInventory';
-import { BannerPot } from '@/components/home/bannerPot';
+import { BannerPot } from '@/components/banner/bannerPot';
 import { SectionMoreProducts } from '@/components/home/sectionMoreProducts';
 
 export default function HomeScreen() {

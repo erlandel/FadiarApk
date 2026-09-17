@@ -63,15 +63,15 @@ export function BannerPot() {
             : 'flex-col items-center justify-between'
         }`}
       >
-        <View className={isTablet ? ' flex-1' : 'items-center'}>
-       <Text
-  className={`font-bold ${
-    isTablet ? 'text-left text-4xl' : ' text-3xl'
-  }`}
->
-  <Text className="text-accent">Diversidad de soluciones</Text>
-  <Text className="text-white">{`\npara cada espacio de tu hogar`}</Text>
-</Text>
+        <View className={isTablet ? 'flex-1' : 'items-start'}>
+          <Text
+            className={`font-bold text-left ${
+              isTablet ? 'text-4xl' : 'text-3xl'
+            }`}
+          >
+            <Text className="text-accent">Diversidad de soluciones</Text>
+            <Text className="text-white">{`\npara cada espacio de tu hogar`}</Text>
+          </Text>
           <Text
             className={`mt-6 text-white/85 ${
               isTablet ? 'text-xl' : ' text-lg'

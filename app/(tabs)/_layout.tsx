@@ -42,17 +42,17 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="shipping"
+          name="orders"
           options={{
-            title: 'Envíos',
-            tabBarIcon: ({ color, size }) => <Icon name="Truck" size={size} color={color} />,
+            title: 'Pedidos',
+            tabBarIcon: ({ color, size }) => <Icon name="Package" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
-          name="contact"
+          name="profile"
           options={{
-            title: 'Contacto',
-            tabBarIcon: ({ color, size }) => <Icon name="Phone" size={size} color={color} />,
+            title: 'Perfil',
+            tabBarIcon: ({ color, size }) => <Icon name="User" size={size} color={color} />,
           }}
         />
       </Tabs>

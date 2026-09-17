@@ -25,7 +25,9 @@ export function useLocationData() {
   };
 }
 
-export function useLocation() {
+export function useLocation(options?: { useGlobalStore?: boolean }) {
+  const useGlobalStore = options?.useGlobalStore ?? true;
+
   const {
     province: storeProvince,
     provinceId: storeProvinceId,
@@ -36,45 +38,69 @@ export function useLocation() {
 
   const { data: provinces, isLoading } = useLocationData();
 
-  const [selectedProvince, setSelectedProvince] = useState(storeProvince || '');
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(storeProvinceId || null);
-  const [selectedMunicipality, setSelectedMunicipality] = useState(storeMunicipality || '');
-  const [selectedMunicipalityId, setSelectedMunicipalityId] = useState<string | null>(storeMunicipalityId || null);
+  const [selectedProvince, setSelectedProvince] = useState(
+    useGlobalStore ? storeProvince || '' : ''
+  );
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(
+    useGlobalStore ? storeProvinceId || null : null
+  );
+  const [selectedMunicipality, setSelectedMunicipality] = useState(
+    useGlobalStore ? storeMunicipality || '' : ''
+  );
+  const [selectedMunicipalityId, setSelectedMunicipalityId] = useState<string | null>(
+    useGlobalStore ? storeMunicipalityId || null : null
+  );
 
   const handleProvinceChange = (prov: ProvinceData) => {
     setSelectedProvince(prov.provincia);
     setSelectedProvinceId(prov.id);
     setSelectedMunicipality('');
     setSelectedMunicipalityId(null);
-    setLocation(prov.provincia, prov.id, '', null);
+    if (useGlobalStore) {
+      setLocation(prov.provincia, prov.id, '', null);
+    }
   };
 
   const handleMunicipalityChange = (mun: MunicipalityData) => {
-    const finalProvince = selectedProvince || storeProvince;
-    let finalProvinceId = selectedProvinceId || storeProvinceId;
+    const finalProvince = useGlobalStore ? selectedProvince || storeProvince : selectedProvince;
+    let finalProvinceId = useGlobalStore
+      ? selectedProvinceId || storeProvinceId
+      : selectedProvinceId;
     if (!finalProvinceId && finalProvince) {
       const found = provinces.find((p) => p.provincia === finalProvince);
       if (found) finalProvinceId = found.id;
     }
     setSelectedMunicipality(mun.municipio);
     setSelectedMunicipalityId(mun.id);
-    setLocation(finalProvince, finalProvinceId ?? null, mun.municipio, mun.id);
+    if (useGlobalStore) {
+      setLocation(finalProvince, finalProvinceId ?? null, mun.municipio, mun.id);
+    }
   };
 
   const municipalities =
-    provinces.find((p) => p.provincia === (selectedProvince || storeProvince))?.municipios || [];
+    provinces.find(
+      (p) => p.provincia === (useGlobalStore ? selectedProvince || storeProvince : selectedProvince)
+    )?.municipios || [];
 
   return {
+    data: provinces,
     provinces,
     municipalities,
+    loading: isLoading,
     isLoading,
-    selectedProvince: selectedProvince || storeProvince,
-    selectedProvinceId: selectedProvinceId || storeProvinceId,
-    selectedMunicipality: selectedMunicipality || storeMunicipality,
-    selectedMunicipalityId: selectedMunicipalityId || storeMunicipalityId,
+    selectedProvince: useGlobalStore ? selectedProvince || storeProvince : selectedProvince,
+    selectedProvinceId: useGlobalStore ? selectedProvinceId || storeProvinceId : selectedProvinceId,
+    selectedMunicipality: useGlobalStore
+      ? selectedMunicipality || storeMunicipality
+      : selectedMunicipality,
+    selectedMunicipalityId: useGlobalStore
+      ? selectedMunicipalityId || storeMunicipalityId
+      : selectedMunicipalityId,
     handleProvinceChange,
     handleMunicipalityChange,
     setSelectedProvince,
+    setSelectedProvinceId,
     setSelectedMunicipality,
+    setSelectedMunicipalityId,
   };
 }

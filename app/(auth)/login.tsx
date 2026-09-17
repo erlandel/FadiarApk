@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/validations/auth';
 import { useLogin } from '@/hooks/auth/useLogin';
-import { InputAuth } from '@/components/forms/inputAuth';
+import { InputAuth } from '@/components/input/inputAuth';
 import { Button } from '@/components/primitives/button';
 
 export default function LoginScreen() {
