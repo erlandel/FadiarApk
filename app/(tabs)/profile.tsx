@@ -15,7 +15,7 @@ export default function ProfileScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="mx-4 pb-10 pt-8">
+          <View className="mx-4 pb-100 pt-8">
             <View>
               <Text className="text-3xl font-bold text-primary">
                 Mi Perfil

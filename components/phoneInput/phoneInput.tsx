@@ -195,7 +195,7 @@ export default function PhoneInput({
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => handleCountrySelect(item)}
-                className="flex-row items-center border-b border-gray-100 px-2 py-3"
+                className="flex-row items-center border-b border-gray-100 py-3 pl-2 pr-4"
               >
                 <Text className="mr-3 text-2xl">{item.flag}</Text>
                 <Text className="flex-1 text-base text-gray-700">{item.name}</Text>
