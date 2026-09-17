@@ -55,6 +55,8 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size }) => <Icon name="User" size={size} color={color} />,
           }}
         />
+        <Tabs.Screen name="shipping" options={{ href: null }} />
+        <Tabs.Screen name="contact" options={{ href: null }} />
       </Tabs>
 
       <SideDrawer isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />

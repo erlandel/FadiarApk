@@ -1,5 +1,7 @@
 import { apiClient, setAccessToken, setRefreshToken } from '@/lib/api/client';
 import { ENDPOINTS } from '@/lib/api/endpoints';
+import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
 import type { AuthPayload, Person } from '@/types/auth';
 
 export type LoginResponse = {
@@ -42,6 +44,19 @@ export async function register(payload: {
   type: string;
 }): Promise<void> {
   await apiClient.post(ENDPOINTS.register, payload);
+}
+
+export async function logout(refreshToken?: string): Promise<void> {
+  if (refreshToken) {
+    try {
+      await apiClient.post(ENDPOINTS.logout, { refresh_token: refreshToken });
+    } catch (error) {
+      console.error('Error al cerrar sesión en el servidor:', error);
+    }
+  }
+
+  useAuthStore.getState().clearAuth();
+  useCartStore.getState().clearCart();
 }
 
 export async function verifyCodeEmail(code: string, email: string): Promise<AuthPayload | null> {

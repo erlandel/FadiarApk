@@ -29,11 +29,8 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
   const pathname = usePathname();
   const segments = useSegments();
   const { data: inventoryData } = useInventory();
-  const {
-    selectedCategories,
-    setSelectedCategories,
-    setShouldScrollToProducts,
-  } = useFiltersStore();
+  const { selectedCategories, setSelectedCategories, setShouldScrollToProducts } =
+    useFiltersStore();
   const [isProductsSubmenuOpen, setIsProductsSubmenuOpen] = useState(false);
   const [submenuScroll, setSubmenuScroll] = useState({
     contentHeight: 0,
@@ -117,6 +114,13 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
     router.push(link.href as any);
   };
 
+  const handleLogoPress = () => {
+    setSelectedCategories([]);
+    setIsProductsSubmenuOpen(false);
+    setIsOpen(false);
+    router.push('/(tabs)');
+  };
+
   const handleClose = () => {
     setIsProductsSubmenuOpen(false);
     setIsOpen(false);
@@ -127,21 +131,16 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
   if (!isOpen) return null;
 
   return (
-    <RNModal
-      visible
-      transparent
-      animationType="none"
-      onRequestClose={handleClose}
-    >
+    <RNModal visible transparent animationType="none" onRequestClose={handleClose}>
       <View className="flex-1">
         {/* Overlay: tocar fuera cierra el drawer */}
         <Pressable className="absolute inset-0 bg-black/50" onPress={handleClose} />
 
         {/* top-0 sin statusBarTranslucent: queda bajo la status bar, alineado con la app */}
-        <View className="absolute left-0 top-0 h-120 w-72 rounded-tr-2xl rounded-br-2xl bg-white p-2 shadow-lg">
+        <View className="absolute top-0 left-0 h-120 w-72 rounded-tr-2xl rounded-br-2xl bg-white p-2 shadow-lg">
           <View className="p-6">
             <View className="mb-8 flex-row items-center justify-between">
-              <Pressable onPress={() => handleLinkPress(LINKS[0])}>
+              <Pressable onPress={handleLogoPress}>
                 <Image
                   source={require('../../assets/images/logo.svg')}
                   style={{ width: 120, height: 40 }}
@@ -149,7 +148,12 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                 />
               </Pressable>
               <Pressable onPress={handleClose} hitSlop={8}>
-                <CustomIcon name="MaterialSymbolsClose" width={24} height={24} color={colors.black} />
+                <CustomIcon
+                  name="MaterialSymbolsClose"
+                  width={24}
+                  height={24}
+                  color={colors.black}
+                />
               </Pressable>
             </View>
 
@@ -167,16 +171,14 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                       {isProducts ? (
                         <Pressable
                           onPress={() => handleLinkPress(link)}
-                          className="flex-row flex-1 items-center"
-                          accessibilityRole="button"
-                        >
+                          className="flex-1 flex-row items-center"
+                          accessibilityRole="button">
                           <Text
                             className={
                               active
-                                ? 'text-lg font-extrabold text-accent'
+                                ? 'text-accent text-lg font-extrabold'
                                 : 'text-lg font-bold text-gray-600'
-                            }
-                          >
+                            }>
                             {link.label}
                           </Text>
                           <Icon
@@ -189,15 +191,13 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                       ) : (
                         <Pressable
                           onPress={() => handleLinkPress(link)}
-                          className="flex-row items-center"
-                        >
+                          className="flex-row items-center">
                           <Text
                             className={
                               active
-                                ? 'text-lg font-extrabold text-accent'
+                                ? 'text-accent text-lg font-extrabold'
                                 : 'text-lg font-bold text-gray-600'
-                            }
-                          >
+                            }>
                             {link.label}
                           </Text>
                         </Pressable>
@@ -205,12 +205,11 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                     </View>
 
                     {isProducts && isProductsSubmenuOpen && (
-                      <View className="absolute left-0 top-full z-50 mt-2 w-70 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-lg">
+                      <View className="absolute top-full left-0 z-50 mt-2 w-70 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-lg">
                         <ScrollView
                           horizontal
                           showsHorizontalScrollIndicator
-                          contentContainerStyle={{ minWidth: '100%' }}
-                        >
+                          contentContainerStyle={{ minWidth: '100%' }}>
                           <ScrollView
                             showsVerticalScrollIndicator={false}
                             className="max-h-120"
@@ -233,8 +232,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                 ...current,
                                 offset: nativeEvent.contentOffset.y,
                               }))
-                            }
-                          >
+                            }>
                             <Pressable
                               onPress={() => {
                                 setSelectedCategories([]);
@@ -246,8 +244,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                   setShouldScrollToProducts(true);
                                 }
                               }}
-                              className="flex-row items-center gap-2 py-2"
-                            >
+                              className="flex-row items-center gap-2 py-2">
                               <View
                                 className={`h-4 w-4 rounded-full border-2 border-dashed bg-transparent ${
                                   isOnProductsRoute && selectedCategories.length === 0
@@ -258,10 +255,9 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                               <Text
                                 className={
                                   isOnProductsRoute && selectedCategories.length === 0
-                                    ? 'font-extrabold text-accent'
+                                    ? 'text-accent font-extrabold'
                                     : 'font-bold text-gray-600'
-                                }
-                              >
+                                }>
                                 Ver todos los productos
                               </Text>
                             </Pressable>
@@ -273,8 +269,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                 <Pressable
                                   key={cat.key}
                                   onPress={() => handleCategoryClick(cat.label)}
-                                  className="flex-row items-center gap-2 py-2 "
-                                >
+                                  className="flex-row items-center gap-2 py-2">
                                   <View
                                     className={`h-4 w-4 rounded-full border-2 border-dashed ${
                                       isSelected
@@ -285,10 +280,9 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                   <Text
                                     className={
                                       isSelected
-                                        ? 'text-sm font-extrabold text-accent'
+                                        ? 'text-accent text-sm font-extrabold'
                                         : 'text-sm font-bold text-gray-600'
-                                    }
-                                  >
+                                    }>
                                     {cat.label}
                                   </Text>
                                 </Pressable>
@@ -297,14 +291,14 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                           </ScrollView>
                         </ScrollView>
                         {submenuScroll.contentHeight > submenuScroll.viewportHeight && (
-                          <View className="absolute right-1 top-3 bottom-3 w-1 rounded-full bg-gray-200">
+                          <View className="absolute top-3 right-1 bottom-3 w-1 rounded-full bg-gray-200">
                             <View
-                              className="absolute left-0 w-1 rounded-full bg-primary"
+                              className="bg-primary absolute left-0 w-1 rounded-full"
                               style={{
                                 height: Math.max(
                                   24,
                                   (submenuScroll.viewportHeight / submenuScroll.contentHeight) *
-                                    submenuScroll.viewportHeight,
+                                    submenuScroll.viewportHeight
                                 ),
                                 transform: [
                                   {
@@ -317,7 +311,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
                                           24,
                                           (submenuScroll.viewportHeight /
                                             submenuScroll.contentHeight) *
-                                            submenuScroll.viewportHeight,
+                                            submenuScroll.viewportHeight
                                         )),
                                   },
                                 ],

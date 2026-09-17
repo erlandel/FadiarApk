@@ -2,7 +2,6 @@ import { Keyboard, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCartStore } from '@/store/cartStore';
-import { UserDropdown } from '@/components/navigation/userDropdown';
 import { CustomIcon } from '@/icons/customIcon';
 import { colors } from '@/lib/theme/colors';
 
@@ -30,19 +29,14 @@ export function AppHeader({ onMenuPress }: AppHeaderProps) {
         </Pressable>
 
         {/* Location button */}
-        <Pressable
-          onPress={() => router.push('/modal/location')}
-          hitSlop={8}
-          className=" ml-auto">
+        <Pressable onPress={() => router.push('/modal/location')} hitSlop={8} className="ml-auto">
           <CustomIcon name="AkarIconsLocation" width={22} height={22} color={colors.primary} />
         </Pressable>
-
-
 
         <Pressable
           onPress={() => router.push('/(checkout)/cart1')}
           hitSlop={8}
-          className="relative ">
+          className="relative">
           <CustomIcon name="TablerShoppingCart" width={26} height={26} color={colors.black} />
           {totalItems > 0 && (
             <View className="bg-error absolute -top-1 -right-2 h-5 w-5 items-center justify-center rounded-full">
