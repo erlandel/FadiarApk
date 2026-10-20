@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Animated, {
   cancelAnimation,
@@ -13,12 +13,14 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ProductCard } from './productCard';
 import type { Product } from '@/types/product';
 
-const ITEM_WIDTH = 220; // px, equivalente a w-55 (55 * 4 = 220px)
+export const getProductCardWidth = (width: number, position: 'vertical' | 'horizontal') =>
+  position === 'horizontal' ? Math.min(460, width - 32) : 228;
 const GAP = 8;
 const RESUME_DELAY = 10000; // ms antes de reanudar autoplay tras interactuar
 const DECAY_DECELERATION = 0.998;
 
 interface ProductCarouselProps {
+  position?: 'vertical' | 'horizontal';
   products: Product[];
   speed?: number; // px por segundo
   gap?: number;
@@ -30,8 +32,11 @@ export function ProductCarousel({
   speed = 20,
   gap = GAP,
   direction = 'left',
+  position = 'vertical',
 }: ProductCarouselProps) {
-  const itemFullWidth = ITEM_WIDTH + gap;
+  const { width } = useWindowDimensions();
+  const itemWidth = getProductCardWidth(width, position);
+  const itemFullWidth = itemWidth + gap;
   const setWidth = products.length * itemFullWidth;
 
   // Dos copias idénticas: el loop es solo (offset % setWidth), sin scrollTo.
@@ -105,7 +110,7 @@ export function ProductCarousel({
         paused.value = false;
         clearResumeTimeout();
       };
-    }, [frameCallback, offset, paused, clearResumeTimeout]),
+    }, [frameCallback, offset, paused, clearResumeTimeout])
   );
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -166,10 +171,10 @@ export function ProductCarousel({
           {loopedProducts.map((product, index) => (
             <View
               key={`${product.id}-${index}`}
-              className="w-57 shrink-0"
-              style={{ marginRight: gap }}
-            >
+              className="shrink-0"
+              style={{ width: itemWidth, marginRight: gap }}>
               <ProductCard
+                position={position}
                 productId={product.id}
                 title={product.name}
                 brand={product.brand}

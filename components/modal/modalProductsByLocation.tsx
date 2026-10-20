@@ -25,6 +25,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
     selectedMunicipalityId,
     handleProvinceChange,
     handleMunicipalityChange,
+    confirmLocation,
   } = useLocation();
 
   const [openDropdown, setOpenDropdown] = useState<'provinces' | 'municipalities' | null>(null);
@@ -35,7 +36,10 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
   const provincesRef = useRef<View>(null);
   const municipalitiesRef = useRef<View>(null);
 
-  const openDropdownFor = (ref: React.RefObject<View | null>, kind: 'provinces' | 'municipalities') => {
+  const openDropdownFor = (
+    ref: React.RefObject<View | null>,
+    kind: 'provinces' | 'municipalities'
+  ) => {
     ref.current?.measureInWindow((x, y, width, height) => {
       setDropdownPos({ top: y + height + 4, left: x, width });
       setOpenDropdown(kind);
@@ -69,21 +73,21 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
       return;
     }
     setValidationError(false);
-    onClose();
+    if (confirmLocation()) onClose();
   };
 
   const dropdownData: (ProvinceData | MunicipalityData)[] =
     openDropdown === 'provinces' ? provinces : municipalities;
 
   return (
-    <View className="w-full max-w-xl rounded-lg bg-white py-6 ">
-      <Text className="mb-3 px-6 text-xl font-semibold text-text-heading text-center">
+    <View className="w-full max-w-xl rounded-lg bg-white py-6">
+      <Text className="text-text-heading mb-3 px-6 text-center text-xl font-semibold">
         Lugar de entrega o recogida
       </Text>
 
-      <View className="mb-4 h-px w-full bg-gray" />
+      <View className="bg-gray mb-4 h-px w-full" />
 
-      <Text className="mb-4 px-6 text-gray-500 ">
+      <Text className="mb-4 px-6 text-gray-500">
         Se mostrarán los productos según la ubicación seleccionada
       </Text>
 
@@ -95,14 +99,13 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
         <View className="mb-4 gap-4 px-6">
           {/* Provincia */}
           <View>
-            <Text className="mb-1 font-medium text-text-heading">Provincia</Text>
+            <Text className="text-text-heading mb-1 font-medium">Provincia</Text>
             <Pressable
               ref={provincesRef}
               onPress={toggleProvinces}
-              className={`h-12 flex-row items-center justify-between rounded-xl border-2 bg-surface px-3 ${
+              className={`bg-surface h-12 flex-row items-center justify-between rounded-xl border-2 px-3 ${
                 openDropdown === 'provinces' ? 'border-accent' : 'border-gray-100'
-              }`}
-            >
+              }`}>
               <Text className={selectedProvince ? 'text-gray-800' : 'text-gray-500'}>
                 {selectedProvince || 'Seleccione una provincia'}
               </Text>
@@ -110,20 +113,19 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
             </Pressable>
 
             {validationError && !selectedProvince && (
-              <Text className="ml-2 mt-1 text-sm text-error">Este campo es requerido</Text>
+              <Text className="text-error mt-1 ml-2 text-sm">Este campo es requerido</Text>
             )}
           </View>
 
           {/* Municipio */}
           <View>
-            <Text className="mb-1 font-medium text-text-heading">Municipio</Text>
+            <Text className="text-text-heading mb-1 font-medium">Municipio</Text>
             <Pressable
               ref={municipalitiesRef}
               onPress={toggleMunicipalities}
-              className={`h-12 flex-row items-center justify-between rounded-2xl  border-2 bg-surface px-3 ${
-                openDropdown === 'municipalities' ? 'border-accent ' : 'border-gray-100'
-              }`}
-            >
+              className={`bg-surface h-12 flex-row items-center justify-between rounded-2xl border-2 px-3 ${
+                openDropdown === 'municipalities' ? 'border-accent' : 'border-gray-100'
+              }`}>
               <Text className={selectedMunicipality ? 'text-gray-800' : 'text-gray-500'}>
                 {selectedMunicipality || 'Seleccione un municipio'}
               </Text>
@@ -131,20 +133,19 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
             </Pressable>
 
             {submitAttempted && !selectedMunicipality && (
-              <Text className="ml-2 mt-1 text-sm text-error">Este campo es requerido</Text>
+              <Text className="text-error mt-1 ml-2 text-sm">Este campo es requerido</Text>
             )}
           </View>
         </View>
       )}
 
-      <View className="mb-4 h-px w-full bg-gray shadow-t-xl" />
+      <View className="bg-gray shadow-t-xl mb-4 h-px w-full" />
 
       <View className="items-center px-6">
         <Pressable
           onPress={handleAccept}
-          className="rounded-full bg-accent px-6 py-2 active:opacity-80"
-        >
-          <Text className="text-black font-bold">Aceptar</Text>
+          className="bg-accent rounded-full px-6 py-2 active:opacity-80">
+          <Text className="font-bold text-black">Aceptar</Text>
         </Pressable>
       </View>
 
@@ -153,8 +154,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
         visible={openDropdown !== null}
         transparent
         animationType="none"
-        onRequestClose={() => setOpenDropdown(null)}
-      >
+        onRequestClose={() => setOpenDropdown(null)}>
         <Pressable className="flex-1" onPress={() => setOpenDropdown(null)}>
           {dropdownPos && (
             <Pressable
@@ -166,8 +166,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
                 height: 240,
                 elevation: 20,
               }}
-              onPress={(e) => e.stopPropagation()}
-            >
+              onPress={(e) => e.stopPropagation()}>
               <FlatList
                 data={dropdownData}
                 keyExtractor={(item) => item.id}
@@ -188,8 +187,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
                         setOpenDropdown(null);
                         setValidationError(false);
                         setSubmitAttempted(false);
-                      }}
-                    >
+                      }}>
                       <Text className="text-gray-700">{label}</Text>
                     </Pressable>
                   );

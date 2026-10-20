@@ -10,6 +10,8 @@ import { Icon } from '@/icons/lucideIcon';
 import { useAddToCart } from '@/hooks/cart/useAddToCart';
 import { useCartStore } from '@/store/cartStore';
 import { toastWarning } from '@/messages/toast';
+import { QuantityStepper } from '@/components/product/quantityStepper';
+import { CustomIcon } from '@/icons/customIcon';
 
 export interface ProductCardProps {
   productId: string;
@@ -32,7 +34,7 @@ function resolveImageUri(path?: string | null): string | null {
   if (!path || !String(path).trim()) return null;
   const value = String(path).trim();
   if (/^https?:\/\//i.test(value) || value.startsWith('data:')) return value;
-  return buildImageUrl(value.replace(/^\/+/, ''));
+  return buildImageUrl(value.replace(/^\/+/, ''), 240);
 }
 
 function ProductCardComponent({
@@ -44,7 +46,7 @@ function ProductCardComponent({
   price,
   temporalPrice,
   image,
-  count = 0,
+  count,
   currency = 'USD',
   tiendaId,
   quantityProducts,
@@ -55,23 +57,18 @@ function ProductCardComponent({
   const { addToCart, loading } = useAddToCart();
   const cartItems = useCartStore((state) => state.items);
   const [quantity, setQuantity] = useState(Math.max(1, quantityProducts ?? 1));
-  const [isInCart, setIsInCart] = useState(false);
+  const isInCart = cartItems.some((item) => String(item.productId) === String(productId));
   const imageUri = resolveImageUri(image);
-  const imageSources = imageUri
-    ? [imageUri, imageUri.replace('/api/', '/')]
-    : [];
+  const imageSources = imageUri ? [imageUri, imageUri.replace('/api/', '/')] : [];
   const [imageSourceIndex, setImageSourceIndex] = useState(0);
 
-  useEffect(() => {
-    if (productId !== undefined && productId !== null) {
-      setIsInCart(cartItems.some((item) => item.productId === productId));
-    }
-  }, [productId, cartItems]);
-
+  // Keep the selected quantity within the available stock when the card receives a new quantity.
   useEffect(() => {
     if (quantityProducts && quantityProducts > 0) {
       const initialQuantity =
         count !== undefined ? Math.min(quantityProducts, count) : quantityProducts;
+      // This effect synchronizes a controlled quantity prop with the card's local quantity.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuantity(Math.max(1, initialQuantity));
     }
   }, [quantityProducts, count]);
@@ -84,7 +81,7 @@ function ProductCardComponent({
   const goToDetail = () =>
     router.push({
       pathname: '/product/[id]',
-      params: { id: productId },
+      params: { id: productId, tiendaId, preSale: String(isPreSale) },
     });
 
   const adjustQuantity = (delta: number) => {
@@ -139,7 +136,7 @@ function ProductCardComponent({
 
   const renderProntoPill = () =>
     isPreSale ? (
-      <View className="absolute top-2 right-2 z-10 rounded-full bg-accent px-2 py-0.5">
+      <View className="bg-accent absolute top-2 right-2 z-10 rounded-full px-2 py-0.5">
         <Text className="text-[10px] font-bold text-white">Pronto</Text>
       </View>
     ) : null;
@@ -148,26 +145,34 @@ function ProductCardComponent({
   const renderPrice = (compact = false) =>
     hasDiscount ? (
       <View className="min-w-0 flex-row flex-wrap items-baseline justify-between gap-x-1 gap-y-1">
-        <Text className={compact ? 'shrink-0 text-base font-bold text-primary' : 'shrink-0 text-xl font-bold text-primary'}>
+        <Text
+          className={
+            compact
+              ? 'text-primary shrink-0 text-base font-bold'
+              : 'text-primary shrink-0 text-xl font-bold'
+          }>
           ${parsePrice(temporalPrice!).toFixed(2)}{' '}
-          <Text className="text-base font-normal text-primary">{currency}</Text>
+          <Text className="text-primary text-base font-normal">{currency}</Text>
         </Text>
-        <Text className="min-w-0 shrink truncate text-base text-muted line-through">
+        <Text className="text-muted min-w-0 shrink truncate text-base line-through">
           ${parsePrice(price).toFixed(2)} {currency}
         </Text>
       </View>
     ) : (
       <View className="flex-row flex-wrap items-baseline gap-2">
-        <Text className={compact ? 'text-base font-bold text-primary' : 'text-xl font-bold text-primary'}>
+        <Text
+          className={
+            compact ? 'text-primary text-base font-bold' : 'text-primary text-xl font-bold'
+          }>
           ${parsePrice(price).toFixed(2)}{' '}
-          <Text className="text-base font-normal text-primary">{currency}</Text>
+          <Text className="text-primary text-base font-normal">{currency}</Text>
         </Text>
       </View>
     );
 
   const renderWarranty = () =>
     warrantyNumber > 0 ? (
-      <Text className="text-sm font-medium text-accent">
+      <Text className="text-accent text-sm font-medium">
         Garantía de {warrantyNumber / 30} meses
       </Text>
     ) : (
@@ -175,55 +180,48 @@ function ProductCardComponent({
     );
 
   // Stepper + botón carrito con los estados de la web
-  const renderActions = (compact = false) =>
+  const renderActions = (compact = false, horizontal = false) =>
     isPreSale ? null : (
       <View className="flex-row items-center justify-between gap-3 font-bold">
-        <View className="flex-row shrink-0 items-center rounded-xl border border-gray-200 bg-white">
-          <Pressable
-            onPress={() => adjustQuantity(-1)}
-            accessibilityLabel="Restar"
-            className={compact ? 'px-2 py-1.5' : 'px-3 py-2'}
-          >
-            <Text className="text-base font-bold text-accent">−</Text>
-          </Pressable>
-          <View
-            className={cn(
-              'border-l border-r border-gray-300 py-1',
-              compact ? 'w-8' : 'w-10',
-            )}
-          >
-            <Text className="text-center text-sm font-bold text-text">{quantity}</Text>
-          </View>
-          <Pressable
-            onPress={() => adjustQuantity(1)}
-            accessibilityLabel="Sumar"
-            className={compact ? 'px-2 py-1.5' : 'px-3 py-2'}
-          >
-            <Text className="text-base font-bold text-accent">+</Text>
-          </Pressable>
-        </View>
+        <QuantityStepper
+          quantity={quantity}
+          onDecrease={() => adjustQuantity(-1)}
+          onIncrease={() => adjustQuantity(1)}
+          compact={compact}
+          horizontal={horizontal}
+          disabled={soldOut}
+        />
 
         <Pressable
           onPress={handleAddToCart}
           disabled={soldOut || loading}
           accessibilityLabel="Añadir al carrito"
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: soldOut
+              ? colors.surface
+              : loading || isInCart
+                ? colors.primary
+                : colors.white,
+            borderColor: soldOut ? colors.gray : colors.primary,
+          }}
           className={cn(
             'rounded-xl border',
-            compact ? 'px-3 py-2' : 'px-4 py-2',
+            horizontal ? 'h-[40px] w-[56px]' : compact ? 'px-3 py-2' : 'px-4 py-2',
             soldOut
               ? 'border-gray-300 bg-gray-100 opacity-50'
               : loading || isInCart
                 ? 'border-primary bg-primary'
-                : 'border-primary bg-white',
-          )}
-        >
+                : 'border-primary bg-white'
+          )}>
           {loading ? (
             <View className="h-5 w-5 items-center justify-center">
               <ActivityIndicator size="small" color={colors.white} />
             </View>
           ) : (
-            <Icon
-              name="ShoppingCart"
+            <CustomIcon
+              name="TablerShoppingCart"
               size={20}
               color={soldOut ? colors.muted : loading || isInCart ? colors.white : colors.primary}
             />
@@ -237,9 +235,8 @@ function ProductCardComponent({
     return (
       <Pressable
         onPress={goToDetail}
-        className="h-48 w-full max-w-115 flex-row gap-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm"
-      >
-        <View className="relative w-30 shrink-0 overflow-hidden rounded-2xl bg-gray-50">
+        className="min-h-48 w-full max-w-115 flex-row gap-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+        <View className="relative h-44 w-30 shrink-0 overflow-hidden rounded-2xl bg-gray-50">
           {renderSoldOutRibbon()}
           {renderImage('h-full w-full')}
         </View>
@@ -247,24 +244,24 @@ function ProductCardComponent({
         <View className="min-w-0 flex-1 flex-col justify-between">
           <View>
             {category ? (
-              <Text numberOfLines={1} className="text-sm text-muted">
+              <Text numberOfLines={1} className="text-muted text-sm">
                 {category}
               </Text>
             ) : null}
-            <Text numberOfLines={2} className="mb-1 text-base font-bold text-primary">
+            <Text numberOfLines={2} className="text-primary mb-1 text-base font-bold">
               {title}
             </Text>
           </View>
 
           <View className="flex-col justify-end gap-1">
             {brand ? (
-              <Text numberOfLines={1} className="text-sm text-primary">
+              <Text numberOfLines={1} className="text-primary text-sm">
                 {brand}
               </Text>
             ) : null}
             {renderWarranty()}
             {renderPrice(true)}
-            <View className="mt-1 px-2">{renderActions(true)}</View>
+            <View className="mt-1 w-full">{renderActions(true, true)}</View>
           </View>
         </View>
       </Pressable>
@@ -275,8 +272,7 @@ function ProductCardComponent({
   return (
     <Pressable
       onPress={goToDetail}
-      className="h-120 w-full max-w-57 flex-col justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm"
-    >
+      className="h-120 w-full max-w-57 flex-col justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
       <View className="relative h-47.5 w-full shrink-0 overflow-hidden rounded-2xl bg-gray-50">
         {renderSoldOutRibbon()}
         {renderProntoPill()}
@@ -285,18 +281,18 @@ function ProductCardComponent({
 
       <View className="min-h-0 flex-1 flex-col gap-2 overflow-hidden">
         {category ? (
-          <Text numberOfLines={1} className="text-sm text-muted">
+          <Text numberOfLines={1} className="text-muted text-sm">
             {category}
           </Text>
         ) : null}
-        <Text numberOfLines={2} className="text-lg font-semibold text-primary">
+        <Text numberOfLines={2} className="text-primary text-lg font-semibold">
           {title}
         </Text>
       </View>
 
       <View className="flex-col gap-3">
         {brand ? (
-          <Text numberOfLines={1} className="text-base text-primary">
+          <Text numberOfLines={1} className="text-primary text-base">
             {brand}
           </Text>
         ) : null}

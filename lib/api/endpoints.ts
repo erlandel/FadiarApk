@@ -18,13 +18,17 @@ export const ENDPOINTS = {
   updateCartQuantity: `${server_url}modificar_cantidad_producto_carrito`,
 
   inventoryManager: `${server_url}inventory_manager`,
+  featuredProductsByZone: `${server_url}obtener_productos_destacados_zona`,
+  storeProducts: `${server_url}obtener_productos_tienda`,
+  searchProductsByZone: `${server_url}buscar_productos_zona`,
+  categoriesTree: `${server_url}get_categories_tree`,
+  brands: `${server_url}obtener_marcas`,
   latestProducts: `${server_url}getNewerProducts`,
   bestSelling: `${server_url}img_mas_vendido`,
   mostViewed: `${server_url}img_mas_vendido`,
   upcomingProducts: `${server_url}inventory_new_releases_manager`,
   getProductForVisual: `${server_url}getProductForVisual`,
 
-  provincesMunicipalities: `${server_url}obtener_provincias_municipios`,
 
   addOrder: `${server_url}add_order`,
   getOrders: `${server_url}pedidos_manager`,

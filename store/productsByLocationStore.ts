@@ -16,11 +16,12 @@ type ProductsByLocationState = {
   globalProducts: any[];
   lastFetchedMunicipalityId: string | null;
   provincesVersion: string | null;
+  hasHydrated: boolean;
   setLocation: (
     province: string,
     provinceId: string | null,
     municipality: string,
-    municipalityId: string | null,
+    municipalityId: string | null
   ) => void;
   clearLocation: () => void;
   setIsOpen: (isOpen: boolean) => void;
@@ -32,6 +33,7 @@ type ProductsByLocationState = {
   }) => void;
   setGlobalProducts: (products: any[]) => void;
   setProvincesVersion: (version: string | null) => void;
+  setHasHydrated: (value: boolean) => void;
 };
 
 export const useProductsByLocationStore = create<ProductsByLocationState>()(
@@ -48,6 +50,7 @@ export const useProductsByLocationStore = create<ProductsByLocationState>()(
       globalProducts: [],
       lastFetchedMunicipalityId: null,
       provincesVersion: null,
+      hasHydrated: false,
 
       setLocation: (province, provinceId, municipality, municipalityId) =>
         set({ province, provinceId, municipality, municipalityId }),
@@ -74,6 +77,7 @@ export const useProductsByLocationStore = create<ProductsByLocationState>()(
       setGlobalProducts: (globalProducts) => set({ globalProducts }),
 
       setProvincesVersion: (provincesVersion) => set({ provincesVersion }),
+      setHasHydrated: (hasHydrated) => set({ hasHydrated }),
     }),
     {
       name: LOCATION_STORAGE_NAME,
@@ -86,8 +90,11 @@ export const useProductsByLocationStore = create<ProductsByLocationState>()(
         municipalityId: state.municipalityId,
         provincesVersion: state.provincesVersion,
       }),
-    },
-  ),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
+    }
+  )
 );
 
 export default useProductsByLocationStore;

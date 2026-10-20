@@ -6,7 +6,7 @@ import type { Product, ProductID } from '@/types/product';
 export async function fetchLatestProducts(
   count: number,
   municipalityId?: string | null,
-  provinceId?: string | null,
+  provinceId?: string | null
 ): Promise<Product[]> {
   const { data } = await apiClient.post(ENDPOINTS.latestProducts, {
     count,
@@ -24,7 +24,7 @@ export async function fetchLatestProducts(
 export async function fetchBestSelling(
   count: number,
   municipalityId?: string | null,
-  provinceId?: string | null,
+  provinceId?: string | null
 ): Promise<Product[]> {
   const { data } = await apiClient.post(ENDPOINTS.bestSelling, {
     count,
@@ -40,15 +40,18 @@ export async function fetchBestSelling(
 }
 
 export async function fetchProductForVisual(id: string): Promise<ProductID | null> {
-  const { data } = await apiClient.post(ENDPOINTS.getProductForVisual, {
-    id_product: id,
-  });
+  const { data } = await apiClient.post(ENDPOINTS.getProductForVisual, { id_product: id });
   const product = data?.product;
   if (!product) return null;
   return {
     ...product,
     id: String(product.id),
     img: product.image || product.img,
-    currency: data.currencys?.[0] || { currency: 'USD' },
+    currency: product.currency || data.currencys?.[0] || { currency: 'USD' },
+    tiendaId: product.tiendaId ?? product.id_tienda,
+    pre_venta: Boolean(product.pre_venta ?? product.preVenta),
+    preview_img: product.preview_img,
+    img_web: product.img_web,
+    preview_img_web: product.preview_img_web,
   } as ProductID;
 }

@@ -17,6 +17,12 @@ export type Product = {
   tiendaId?: string;
   id_tienda?: string;
   isPreSale?: boolean;
+  pre_venta?: boolean;
+  tiendas?: string[];
+  preview_img?: string;
+  img_web?: string;
+  preview_img_web?: string;
+  specs?: Array<{ name: string; description: string }>;
 };
 
 export type ProductID = {
@@ -38,6 +44,15 @@ export type ProductID = {
   tiendaId?: string;
   count?: number;
   specs?: Array<{ name: string; description: string }>;
+  pre_venta?: boolean;
+  tiendas?: string[];
+  preview_img?: string;
+  img_web?: string;
+  preview_img_web?: string;
+  imagenes?: Array<{
+    img: string;
+    preview_img?: string | null;
+  }>;
 };
 
 export type Store = {
@@ -57,3 +72,15 @@ export interface InventoryData {
   tiendas: Store[];
   currencys: any;
 }
+
+export type ProductCategory = {
+  id: string;
+  name: string;
+  hijos?: ProductCategory[];
+};
+
+export type CatalogContext = {
+  tiendas: Store[];
+  currencys: any;
+  maxPrice: number;
+};

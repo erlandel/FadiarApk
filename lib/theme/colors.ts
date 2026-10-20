@@ -1,5 +1,5 @@
 export const colors = {
-  primary: '#022954',
+  primary: '#022854',
   primaryHover: '#034078',
   accent: '#D69F04',
   muted: '#777777',

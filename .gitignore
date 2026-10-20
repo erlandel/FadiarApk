@@ -3,6 +3,7 @@ node_modules/
 dist/
 openspec/
 .opencode/
+.agents/
 
 npm-debug.*
 *.jks

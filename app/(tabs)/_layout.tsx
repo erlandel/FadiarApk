@@ -5,9 +5,15 @@ import { AppHeader } from '@/components/navigation/appHeader';
 import { SideDrawer } from '@/components/navigation/sideDrawer';
 import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
+import { ModalProductsByLocation } from '@/components/modal/modalProductsByLocation';
+import { useProductsByLocationStore } from '@/store/productsByLocationStore';
 
 export default function TabsLayout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const hasHydrated = useProductsByLocationStore((state) => state.hasHydrated);
+  const hasSavedLocation = useProductsByLocationStore((state) =>
+    Boolean(state.provinceId && state.municipalityId)
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -57,9 +63,15 @@ export default function TabsLayout() {
         />
         <Tabs.Screen name="shipping" options={{ href: null }} />
         <Tabs.Screen name="contact" options={{ href: null }} />
+        <Tabs.Screen name="product/[id]" options={{ href: null }} />
       </Tabs>
 
       <SideDrawer isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />
+      {hasHydrated && !hasSavedLocation ? (
+        <View className="absolute inset-0 z-[2000] items-center justify-center bg-black/60 px-4">
+          <ModalProductsByLocation onClose={() => undefined} />
+        </View>
+      ) : null}
     </View>
   );
 }

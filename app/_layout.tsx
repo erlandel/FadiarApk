@@ -22,12 +22,10 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           animation: 'none',
-        }}
-      >
+        }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(checkout)" />
-        <Stack.Screen name="product/[id]" />
         <Stack.Screen
           name="modal/location"
           options={{

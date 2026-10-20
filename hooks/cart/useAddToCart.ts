@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { addProductToCart, syncCart } from '../../data/services/cart.service';
+import { addProductToCart } from '../../data/services/cart.service';
 import { useAuthStore } from '@/store/authStore';
 import { toastError, toastSuccess } from '@/messages/toast';
 
@@ -15,7 +15,6 @@ export function useAddToCart() {
       return addProductToCart(item);
     },
     onSuccess: () => {
-      void syncCart();
       void queryClient.invalidateQueries({ queryKey: ['cart'] });
       toastSuccess('Producto agregado al carrito');
     },

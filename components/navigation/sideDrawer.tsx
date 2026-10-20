@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal as RNModal, Pressable, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { usePathname, useRouter, useSegments } from 'expo-router';
 import { useFiltersStore } from '@/store/filtersStore';
-import { useInventory } from '@/hooks/products/useInventory';
+import { flattenCategories, useCategories } from '@/hooks/products/useCategories';
 import { normalizeText } from '@/utils/format';
 import { toastInfo } from '@/messages/toast';
 import { Icon } from '@/icons/lucideIcon';
@@ -28,7 +28,6 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = useSegments();
-  const { data: inventoryData } = useInventory();
   const { selectedCategories, setSelectedCategories, setShouldScrollToProducts } =
     useFiltersStore();
   const [isProductsSubmenuOpen, setIsProductsSubmenuOpen] = useState(false);
@@ -37,6 +36,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
     offset: 0,
     viewportHeight: 0,
   });
+  const { data: categoryTree = [] } = useCategories({ enabled: isOpen && isProductsSubmenuOpen });
 
   const normalize = (p: string) => (p.endsWith('/') ? p.slice(0, -1) : p);
   const checkActive = (href: string) => {
@@ -70,23 +70,14 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
 
   const availableCategories = useMemo(() => {
     const map = new Map<string, string>();
-    (inventoryData?.products ?? []).forEach((p: any) => {
-      const name = p.categoria?.name;
-      if (!name) return;
-      const key = normalizeText(name);
-      if (!map.has(key)) map.set(key, name);
+    flattenCategories(categoryTree).forEach((category) => {
+      const key = normalizeText(category.label);
+      if (!map.has(key)) map.set(key, category.label);
     });
     return Array.from(map.entries())
       .map(([key, label]) => ({ key, label }))
       .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
-  }, [inventoryData]);
-
-  // Precarga rutas al montar el layout (no al abrir el drawer).
-  useEffect(() => {
-    LINKS.filter((link) => link.available).forEach((link) => {
-      router.prefetch(link.href as any);
-    });
-  }, [router]);
+  }, [categoryTree]);
 
   const handleCategoryClick = (label: string) => {
     const isAlreadySelected = selectedCategories.includes(label);

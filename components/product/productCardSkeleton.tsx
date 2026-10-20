@@ -10,7 +10,7 @@ function ShimmerBlock({ className }: { className: string }) {
         toValue: 1,
         duration: 1200,
         useNativeDriver: true,
-      }),
+      })
     );
     animation.start();
 
@@ -36,9 +36,31 @@ function ShimmerBlock({ className }: { className: string }) {
   );
 }
 
-export function ProductCardSkeleton() {
+export function ProductCardSkeleton({
+  position = 'vertical',
+}: {
+  position?: 'vertical' | 'horizontal';
+}) {
+  if (position === 'horizontal') {
+    return (
+      <View className="h-48 w-full flex-row gap-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+        <ShimmerBlock className="h-full w-30 rounded-2xl" />
+        <View className="flex-1 justify-between">
+          <ShimmerBlock className="h-3 w-16 rounded" />
+          <ShimmerBlock className="h-4 w-full rounded" />
+          <ShimmerBlock className="h-4 w-3/4 rounded" />
+          <ShimmerBlock className="h-4 w-20 rounded" />
+          <ShimmerBlock className="h-5 w-24 rounded" />
+          <View className="flex-row justify-between">
+            <ShimmerBlock className="h-8 w-20 rounded-xl" />
+            <ShimmerBlock className="h-8 w-10 rounded-xl" />
+          </View>
+        </View>
+      </View>
+    );
+  }
   return (
-    <View className="h-120 w-full max-w-55 flex-col justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+    <View className="h-120 w-full max-w-57 flex-col justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
       {/* Imagen: misma altura exacta que ProductCard (h-47.5) */}
       <ShimmerBlock className="h-47.5 w-full shrink-0 rounded-2xl" />
 

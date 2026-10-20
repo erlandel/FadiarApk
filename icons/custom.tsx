@@ -6,7 +6,12 @@ type Props = SvgProps;
 export function AkarIconsLocation(props: Props) {
   return (
     <Svg width={26} height={26} viewBox="0 0 24 24" {...props}>
-      <G fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
+      <G
+        fill="none"
+        stroke={props.color ?? '#000'}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}>
         <Circle cx={12} cy={10} r={3} />
         <Path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8" />
       </G>
@@ -17,7 +22,12 @@ export function AkarIconsLocation(props: Props) {
 export function TablerShoppingCart(props: Props) {
   return (
     <Svg width={28} height={28} viewBox="0 0 24 24" {...props}>
-      <G fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
+      <G
+        fill="none"
+        stroke={props.color ?? '#000'}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}>
         <Path d="M4 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0m11 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0" />
         <Path d="M17 17H6V3H4" />
         <Path d="m6 5l14 1l-1 7H6" />
@@ -59,7 +69,10 @@ export function MaterialSymbolsMenu(props: Props) {
 export function MaterialSymbolsClose(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="#000" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z" />
+      <Path
+        fill="#000"
+        d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
+      />
     </Svg>
   );
 }
@@ -74,13 +87,7 @@ export function MaterialSymbolsAdd(props: Props) {
 
 export function MaterialIconThemeDependenciesUpdate(props: Props) {
   return (
-    <Svg
-      width={30}
-      height={30}
-      viewBox="0 0 16 16"
-      transform="scale(1,-1) rotate(40)"
-      {...props}
-    >
+    <Svg width={30} height={30} viewBox="0 0 16 16" transform="scale(1,-1) rotate(40)" {...props}>
       <Path
         fill="#fff"
         d="m10.484 3.635l-2.5 2.546l-.875-.891l1-1.018H8q-1.563 0-2.656 1.121Q4.249 6.515 4.25 8.122a3.5 3.5 0 0 0 .375 1.59l-.937.955a5.156 5.25 0 0 1-.516-1.24A4.81 4.897 0 0 1 3 8.121Q3 5.99 4.453 4.494T8 2.999h.11l-1-1.018l.874-.891zm-4.968 8.747l2.5-2.546l.875.891l-1 1.018H8q1.563 0 2.656-1.12q1.095-1.123 1.094-2.73a3.5 3.5 0 0 0-.375-1.59l.938-.955q.343.604.515 1.24q.172.638.172 1.305q0 2.131-1.453 3.628Q10.094 13.018 8 13.018h-.11l1 1.018l-.874.891z"
@@ -112,7 +119,14 @@ export function NotoV1Information(props: Props) {
 export function MajesticonsArrowRight(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m19 12l-6-6m6 6l-6 6m6-6H5" />
+      <Path
+        fill="none"
+        stroke="#fff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="m19 12l-6-6m6 6l-6 6m6-6H5"
+      />
     </Svg>
   );
 }
@@ -120,7 +134,10 @@ export function MajesticonsArrowRight(props: Props) {
 export function FacebookIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="currentColor" d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95" />
+      <Path
+        fill="currentColor"
+        d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95"
+      />
     </Svg>
   );
 }
@@ -128,7 +145,10 @@ export function FacebookIcon(props: Props) {
 export function InstagramIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="currentColor" d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3" />
+      <Path
+        fill="currentColor"
+        d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"
+      />
     </Svg>
   );
 }
@@ -149,7 +169,10 @@ export function WhatsApp(props: Props) {
 export function LocationIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5" />
+      <Path
+        fill="currentColor"
+        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5"
+      />
     </Svg>
   );
 }
@@ -157,7 +180,10 @@ export function LocationIcon(props: Props) {
 export function EmailIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z" />
+      <Path
+        fill="currentColor"
+        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
+      />
     </Svg>
   );
 }
@@ -165,7 +191,10 @@ export function EmailIcon(props: Props) {
 export function PhoneIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
-      <Path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z" />
+      <Path
+        fill="currentColor"
+        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"
+      />
     </Svg>
   );
 }
@@ -174,11 +203,34 @@ export function StreamlineUltimateColorMessagesLogo(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
       <G fill="none">
-        <Path fill="#E1E5EB" d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348A3.826 3.826 0 0 0 4.826 23h14.348A3.826 3.826 0 0 0 23 19.174V4.826A3.826 3.826 0 0 0 19.174 1" />
-        <Path fill="#E1E5EB" d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348a3.8 3.8 0 0 0 1.36 2.902L22.076 2.359A3.8 3.8 0 0 0 19.174 1" />
-        <Path stroke="#191919" strokeLinecap="round" strokeLinejoin="round" d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348A3.826 3.826 0 0 0 4.826 23h14.348A3.826 3.826 0 0 0 23 19.174V4.826A3.826 3.826 0 0 0 19.174 1" strokeWidth={1} />
-        <Path fill="#fff" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" d="M19.174 11.402c0 3.232-3.212 5.853-7.174 5.853a8.6 8.6 0 0 1-2.514-.37l-4.122 1.92l1.614-3.223a5.38 5.38 0 0 1-2.152-4.18C4.826 8.174 8.038 5.55 12 5.55s7.174 2.625 7.174 5.853" strokeWidth={1} />
-        <Path stroke="#191919" d="M8.891 12a.239.239 0 1 1 0-.478m0 .478a.239.239 0 1 0 0-.478M12.24 12a.24.24 0 0 1 0-.478m0 .478a.239.239 0 1 0 0-.478m3.346.478a.24.24 0 0 1 0-.478m0 .478a.239.239 0 1 0 0-.478" strokeWidth={1} />
+        <Path
+          fill="#E1E5EB"
+          d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348A3.826 3.826 0 0 0 4.826 23h14.348A3.826 3.826 0 0 0 23 19.174V4.826A3.826 3.826 0 0 0 19.174 1"
+        />
+        <Path
+          fill="#E1E5EB"
+          d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348a3.8 3.8 0 0 0 1.36 2.902L22.076 2.359A3.8 3.8 0 0 0 19.174 1"
+        />
+        <Path
+          stroke="#191919"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19.174 1H4.826A3.826 3.826 0 0 0 1 4.826v14.348A3.826 3.826 0 0 0 4.826 23h14.348A3.826 3.826 0 0 0 23 19.174V4.826A3.826 3.826 0 0 0 19.174 1"
+          strokeWidth={1}
+        />
+        <Path
+          fill="#fff"
+          stroke="#191919"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19.174 11.402c0 3.232-3.212 5.853-7.174 5.853a8.6 8.6 0 0 1-2.514-.37l-4.122 1.92l1.614-3.223a5.38 5.38 0 0 1-2.152-4.18C4.826 8.174 8.038 5.55 12 5.55s7.174 2.625 7.174 5.853"
+          strokeWidth={1}
+        />
+        <Path
+          stroke="#191919"
+          d="M8.891 12a.239.239 0 1 1 0-.478m0 .478a.239.239 0 1 0 0-.478M12.24 12a.24.24 0 0 1 0-.478m0 .478a.239.239 0 1 0 0-.478m3.346.478a.24.24 0 0 1 0-.478m0 .478a.239.239 0 1 0 0-.478"
+          strokeWidth={1}
+        />
       </G>
     </Svg>
   );
@@ -212,24 +264,28 @@ export function EmojioneDepartmentStore(props: Props) {
       <Path fill="#fff" d="M6 42h2v18H6zm12 0h2v18h-2z" />
       <Path fill="#b4d7ee" d="M8 42h10v2H8z" />
       <Path fill="#fff" d="M27 33h30v20H27z" />
-      <Path fill="#3e4347" d="M59 56c0 .5-.5 1-1 1H26c-.5 0-1-.5-1-1v-2c0-.5.5-1 1-1h32c.5 0 1 .5 1 1z" />
+      <Path
+        fill="#3e4347"
+        d="M59 56c0 .5-.5 1-1 1H26c-.5 0-1-.5-1-1v-2c0-.5.5-1 1-1h32c.5 0 1 .5 1 1z"
+      />
       <Path fill="#d6eef0" d="M29 35h26v16H29z" />
       <Path fill="#b4d7ee" d="M29 35h26v2H29z" />
-      <Path fill="#62727a" d="M16 47c-.6 0-1 .6-1 1.3v2c0 .7.4 1.7.8 2.1l.4.4c.4.4.8.2.8-.5v-3.9c0-.8-.5-1.4-1-1.4" />
+      <Path
+        fill="#62727a"
+        d="M16 47c-.6 0-1 .6-1 1.3v2c0 .7.4 1.7.8 2.1l.4.4c.4.4.8.2.8-.5v-3.9c0-.8-.5-1.4-1-1.4"
+      />
       <Path fill="#3e4347" d="M64 18H0V2C0 .9.9 0 2 0h60c1.1 0 2 .9 2 2z" />
-      <Path fill="#e8e8e8" d="M3 2c-.5 0-1 .5-1 1v12c0 .6.5 1 1 1h58c.5 0 1-.4 1-1V3c0-.5-.5-1-1-1z" />
+      <Path
+        fill="#e8e8e8"
+        d="M3 2c-.5 0-1 .5-1 1v12c0 .6.5 1 1 1h58c.5 0 1-.4 1-1V3c0-.5-.5-1-1-1z"
+      />
     </Svg>
   );
 }
 
 export function MdiRegister(props: Props) {
   return (
-    <Svg
-      width={24}
-      height={24}
-      viewBox="0 0 24 24"
-      {...props}
-    >
+    <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
       <Path
         fill="currentColor"
         d="M15 14c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m6 2a4 4 0 0 0 4-4a4 4 0 0 0-4-4a4 4 0 0 0-4 4a4 4 0 0 0 4 4"
@@ -244,7 +300,10 @@ export function TwemojiCreditCard(props: Props) {
       <Path fill="#ffac33" d="M4 5a4 4 0 0 0-4 4v18a4 4 0 0 0 4 4h28a4 4 0 0 0 4-4V9s0-4-4-4z" />
       <Path fill="#292f33" d="M0 10h36v5H0z" />
       <Path fill="#f4f7f9" d="M4 19h28v6H4z" />
-      <Path fill="#8899a6" d="M19 24c-1.703 0-2.341-1.21-2.469-1.801c-.547.041-1.08.303-1.805.764C13.961 23.449 13.094 24 12 24c-1.197 0-1.924-.675-2-2c-.003-.056.038-.188.021-.188c-1.858 0-3.202 1.761-3.215 1.779a.997.997 0 0 1-1.397.215a1 1 0 0 1-.215-1.398C5.271 22.303 7.11 20 10 20c1.937 0 2.048 1.375 2.078 1.888l.007.109c.486-.034.991-.354 1.57-.723c.961-.61 2.153-1.371 3.75-.962c.871.223 1.007 1.031 1.059 1.336c.013.076.032.19.049.226c.007 0 .146.091.577.13c.82.075 1.721-.279 2.675-.653c.988-.388 2.01-.788 3.111-.788c3.389 0 4.767 1.635 4.913 1.821a1 1 0 1 1-1.575 1.232c-.024-.027-.93-1.054-3.337-1.054c-.723 0-1.528.315-2.381.649c-1.009.396-2.434.789-3.496.789" />
+      <Path
+        fill="#8899a6"
+        d="M19 24c-1.703 0-2.341-1.21-2.469-1.801c-.547.041-1.08.303-1.805.764C13.961 23.449 13.094 24 12 24c-1.197 0-1.924-.675-2-2c-.003-.056.038-.188.021-.188c-1.858 0-3.202 1.761-3.215 1.779a.997.997 0 0 1-1.397.215a1 1 0 0 1-.215-1.398C5.271 22.303 7.11 20 10 20c1.937 0 2.048 1.375 2.078 1.888l.007.109c.486-.034.991-.354 1.57-.723c.961-.61 2.153-1.371 3.75-.962c.871.223 1.007 1.031 1.059 1.336c.013.076.032.19.049.226c.007 0 .146.091.577.13c.82.075 1.721-.279 2.675-.653c.988-.388 2.01-.788 3.111-.788c3.389 0 4.767 1.635 4.913 1.821a1 1 0 1 1-1.575 1.232c-.024-.027-.93-1.054-3.337-1.054c-.723 0-1.528.315-2.381.649c-1.009.396-2.434.789-3.496.789"
+      />
     </Svg>
   );
 }

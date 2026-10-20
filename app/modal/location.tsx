@@ -1,11 +1,17 @@
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ModalProductsByLocation } from 'components/modal/modalProductsByLocation';
+import { useProductsByLocationStore } from '@/store/productsByLocationStore';
 
 export default function LocationModalScreen() {
   const router = useRouter();
+  const hasSavedLocation = useProductsByLocationStore((state) =>
+    Boolean(state.provinceId && state.municipalityId)
+  );
 
-  const close = () => router.back();
+  const close = () => {
+    if (hasSavedLocation) router.back();
+  };
 
   return (
     <View className="flex-1">

@@ -1,9 +1,10 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { ProductCardSkeleton } from './productCardSkeleton';
-import { ProductCarousel } from './productCarousel';
+import { getProductCardWidth, ProductCarousel } from './productCarousel';
 import type { Product } from '@/types/product';
 
 export interface ProductSectionProps {
+  position?: 'vertical' | 'horizontal';
   title: string;
   products?: Product[];
   isLoading?: boolean;
@@ -17,30 +18,32 @@ export function ProductSection({
   isLoading = false,
   skeletonCount = 5,
   direction = 'left',
+  position = 'vertical',
 }: ProductSectionProps) {
+  const { width } = useWindowDimensions();
   return (
     <View className="mt-12">
-      <View className="flex-row items-center justify-between px-4 mb-2">
-        <Text className="text-2xl font-bold text-primary">{title}</Text>
+      <View className="mb-2 flex-row items-center justify-between px-4">
+        <Text className="text-primary text-2xl font-bold">{title}</Text>
       </View>
 
       {isLoading ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-3 px-4 py-4 "
-        >
+          contentContainerClassName="gap-0 px-4 py-4">
           {Array.from({ length: skeletonCount }).map((_, i) => (
-            <View key={i} className="w-55">
-              <ProductCardSkeleton />
+            <View key={i} style={{ width: getProductCardWidth(width, position) }}>
+              <ProductCardSkeleton position={position} />
             </View>
           ))}
         </ScrollView>
       ) : (
         <ProductCarousel
+          position={position}
           products={products}
           speed={20}
-          gap={15}
+          gap={0}
           direction={direction}
         />
       )}
