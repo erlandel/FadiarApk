@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { Eye, EyeOff, Pencil, Trash2 } from 'lucide-react-native';
 
 import { ProfileInput } from '@/components/input/profileInput';
-import useAuthStore from '@/store/authStore';
+import { useAuthStore } from '@/store/authStore';
 import { usePersonalData } from '@/hooks/myProfileRequests/usePersonalData';
 import { useGetAddresses } from '@/hooks/addressRequests/useGetAddresses';
 import { useAddAddress } from '@/hooks/addressRequests/useAddAddress';

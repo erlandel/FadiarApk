@@ -1,4 +1,4 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, create, type InternalAxiosRequestConfig } from 'axios';
 import { API_BASE } from './config';
 import { asyncStorage } from '../storage/storage';
 
@@ -41,7 +41,7 @@ export function getRefreshToken(): string | null {
   return refreshToken;
 }
 
-export const apiClient = axios.create({
+export const apiClient = create({
   baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },
   timeout: 120000,

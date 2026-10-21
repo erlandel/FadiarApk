@@ -11,7 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { MaterialIconThemeDependenciesUpdate } from '@/icons/custom';
 import { buildImageUrl } from '@/lib/api/config';
-import useAuthStore from '@/store/authStore';
+import { useAuthStore } from '@/store/authStore';
 import useImgFileStore from '@/store/imgFileStore';
 
 export default function AvatarPreview() {

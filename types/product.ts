@@ -22,7 +22,7 @@ export type Product = {
   preview_img?: string;
   img_web?: string;
   preview_img_web?: string;
-  specs?: Array<{ name: string; description: string }>;
+  specs?: { name: string; description: string }[];
 };
 
 export type ProductID = {
@@ -43,16 +43,16 @@ export type ProductID = {
   description?: string;
   tiendaId?: string;
   count?: number;
-  specs?: Array<{ name: string; description: string }>;
+  specs?: { name: string; description: string }[];
   pre_venta?: boolean;
   tiendas?: string[];
   preview_img?: string;
   img_web?: string;
   preview_img_web?: string;
-  imagenes?: Array<{
+  imagenes?: {
     img: string;
     preview_img?: string | null;
-  }>;
+  }[];
 };
 
 export type Store = {
@@ -61,10 +61,10 @@ export type Store = {
   direccion?: string;
   active?: boolean;
   productos?: Product[];
-  domicilios?: Array<{
+  domicilios?: {
     id_municipio: string | number;
     price: number;
-  }>;
+  }[];
 };
 
 export interface InventoryData {

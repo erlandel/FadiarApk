@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import useAuthStore from '@/store/authStore';
+import { useAuthStore } from '@/store/authStore';
 import useImgFileStore from '@/store/imgFileStore';
 import {
   personalDataSchema,

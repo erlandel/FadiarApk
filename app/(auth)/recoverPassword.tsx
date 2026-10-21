@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
@@ -18,10 +17,8 @@ export default function RecoverPasswordScreen() {
     resolver: zodResolver(recoverPasswordSchema),
     defaultValues: { email: '' },
   });
-  const [showErrors, setShowErrors] = useState(false);
 
   const onSubmit = (data: RecoverPasswordFormData) => {
-    setShowErrors(true);
     recover(data.email);
   };
 

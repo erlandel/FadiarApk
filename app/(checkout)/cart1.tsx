@@ -9,7 +9,6 @@ import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
 import { useCartStore } from '@/store/cartStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import { useProductsByLocationStore } from '@/store/productsByLocationStore';
 import { useDeleteFromCart } from '@/hooks/cart/useDeleteFromCart';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useLocation } from '@/hooks/location/useLocation';

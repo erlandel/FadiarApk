@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, Link } from 'expo-router';
+import { Link } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/validations/auth';
@@ -10,7 +10,6 @@ import { InputAuth } from '@/components/input/inputAuth';
 import { Button } from '@/components/primitives/button';
 
 export default function LoginScreen() {
-  const router = useRouter();
   const { login, isLoading } = useLogin();
   const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

@@ -1,4 +1,4 @@
-﻿import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ProtectedScreen } from '@/components/navigation/protectedScreen';
 import PersonalData from '@/components/profile/personalData';

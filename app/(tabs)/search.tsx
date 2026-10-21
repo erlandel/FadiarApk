@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  FlatList,
+  Keyboard,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
@@ -7,6 +15,34 @@ import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
 import { useSearchProducts } from '@/hooks/products/useSearchProducts';
 import { useProductsByLocationStore } from '@/store/productsByLocationStore';
+import type { Product } from '@/types/product';
+
+const SKELETON_ITEMS = [0, 1, 2, 3];
+const productKey = (item: Product) => item.id;
+const skeletonKey = (item: number) => `s-${item}`;
+const renderSkeleton = () => (
+  <View className="flex-1 px-2 py-2">
+    <ProductCardSkeleton />
+  </View>
+);
+const renderProduct = ({ item }: ListRenderItemInfo<Product>) => (
+  <View className="flex-1 px-1 py-2">
+    <ProductCard
+      productId={item.id}
+      title={item.name}
+      brand={item.brand}
+      category={item.categoria?.name}
+      warranty={item.warranty}
+      price={item.price}
+      temporalPrice={item.temporal_price}
+      image={item.img}
+      count={item.count}
+      currency={item.currency?.currency}
+      tiendaId={item.tiendaId}
+      isPreSale={item.pre_venta}
+    />
+  </View>
+);
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -70,13 +106,9 @@ export default function SearchScreen() {
       {isLoading ? (
         <FlatList
           numColumns={2}
-          data={[0, 1, 2, 3]}
-          keyExtractor={(item) => `s-${item}`}
-          renderItem={() => (
-            <View className="flex-1 px-2 py-2">
-              <ProductCardSkeleton />
-            </View>
-          )}
+          data={SKELETON_ITEMS}
+          keyExtractor={skeletonKey}
+          renderItem={renderSkeleton}
           contentContainerClassName="px-2 py-2"
         />
       ) : (
@@ -85,25 +117,8 @@ export default function SearchScreen() {
           data={results}
           keyboardShouldPersistTaps="handled"
           onTouchStart={Keyboard.dismiss}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View className="flex-1 px-1 py-2">
-              <ProductCard
-                productId={item.id}
-                title={item.name}
-                brand={item.brand}
-                category={item.categoria?.name}
-                warranty={item.warranty}
-                price={item.price}
-                temporalPrice={item.temporal_price}
-                image={item.img}
-                count={item.count}
-                currency={item.currency?.currency}
-                tiendaId={item.tiendaId}
-                isPreSale={item.pre_venta}
-              />
-            </View>
-          )}
+          keyExtractor={productKey}
+          renderItem={renderProduct}
           onEndReached={() => {
             if (hasScrolledResults.current && search.hasNextPage && !search.isFetchingNextPage)
               void search.fetchNextPage();

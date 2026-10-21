@@ -1,21 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
 
+const ShimmerContext = createContext<Animated.Value | null>(null);
+
 function ShimmerBlock({ className }: { className: string }) {
-  const progress = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const animation = Animated.loop(
-      Animated.timing(progress, {
-        toValue: 1,
-        duration: 1200,
-        useNativeDriver: true,
-      })
-    );
-    animation.start();
-
-    return () => animation.stop();
-  }, [progress]);
+  const progress = useContext(ShimmerContext);
 
   return (
     <View className={`${className} overflow-hidden bg-gray-200`}>
@@ -24,10 +13,11 @@ function ShimmerBlock({ className }: { className: string }) {
         style={{
           transform: [
             {
-              translateX: progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-120, 240],
-              }),
+              translateX:
+                progress?.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-120, 240],
+                }) ?? -120,
             },
           ],
         }}
@@ -41,6 +31,29 @@ export function ProductCardSkeleton({
 }: {
   position?: 'vertical' | 'horizontal';
 }) {
+  const [progress] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 1200,
+        useNativeDriver: true,
+        isInteraction: false,
+      })
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [progress]);
+
+  return (
+    <ShimmerContext.Provider value={progress}>
+      <ProductCardSkeletonContent position={position} />
+    </ShimmerContext.Provider>
+  );
+}
+
+function ProductCardSkeletonContent({ position }: { position: 'vertical' | 'horizontal' }) {
   if (position === 'horizontal') {
     return (
       <View className="h-48 w-full flex-row gap-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">

@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { buildImageUrl } from '@/lib/api/config';
 import { formatPrice } from '@/utils/format';
@@ -24,8 +25,17 @@ export default function ProductDetailScreen() {
     preSale?: string;
   }>();
   const [qty, setQty] = useState(1);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [galleryState, setGalleryState] = useState({ id, index: 0, open: false });
+  // Reset before committing a different product, including when returning to a previous ID.
+  if (galleryState.id !== id) {
+    setGalleryState({ id, index: 0, open: false });
+  }
+  const selectedImageIndex = galleryState.id === id ? galleryState.index : 0;
+  const isViewerOpen = galleryState.id === id && galleryState.open;
+  const setSelectedImageIndex = (index: number) =>
+    setGalleryState({ id, index, open: isViewerOpen });
+  const setIsViewerOpen = (open: boolean) =>
+    setGalleryState({ id, index: selectedImageIndex, open });
   const { addToCart, loading: addingToCart } = useAddToCart();
   const isInCart = useCartStore((state) =>
     state.items.some((item) => String(item.productId) === String(id))
@@ -49,11 +59,6 @@ export default function ProductDetailScreen() {
   const hasDiscount = !!product?.temporal_price && Number(product.temporal_price) > 0;
   const gallery = useMemo(() => (product ? buildProductGallery(product) : []), [product]);
   const selectedImage = gallery[selectedImageIndex] ?? gallery[0];
-
-  useEffect(() => {
-    setSelectedImageIndex(0);
-    setIsViewerOpen(false);
-  }, [id]);
 
   const detailHeader = (
     <View className="flex-row items-center gap-2 px-4 py-3">
@@ -90,8 +95,10 @@ export default function ProductDetailScreen() {
             accessibilityLabel="Abrir visor de imágenes">
             <Image
               source={{ uri: buildImageUrl(selectedImage?.image ?? product.img, 960) }}
-              className="h-full w-full"
-              resizeMode="contain"
+              style={{ height: '100%', width: '100%' }}
+              contentFit="contain"
+              cachePolicy="memory-disk"
+              recyclingKey={`${id}-${selectedImage?.image ?? product.img}`}
             />
             {!isPreSale && product.count === 0 ? (
               <View className="bg-error absolute top-3 right-3 rounded-full px-3 py-1">
@@ -115,8 +122,9 @@ export default function ProductDetailScreen() {
                   }>
                   <Image
                     source={{ uri: buildImageUrl(image.previewImg ?? image.image, 240) }}
-                    className="h-full w-full"
-                    resizeMode="contain"
+                    style={{ height: '100%', width: '100%' }}
+                    contentFit="contain"
+                    cachePolicy="memory-disk"
                   />
                 </Pressable>
               ))}

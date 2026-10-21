@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import { Text } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { Easing, ZoomOut, ZoomIn } from 'react-native-reanimated';
 

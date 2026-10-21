@@ -5,7 +5,7 @@ import type { ProductCategory } from '@/types/product';
 
 export const flattenCategories = (
   categories: ProductCategory[]
-): Array<{ id: string; label: string }> =>
+): { id: string; label: string }[] =>
   categories.flatMap((category) => [
     { id: category.id, label: category.name },
     ...flattenCategories(category.hijos ?? []),

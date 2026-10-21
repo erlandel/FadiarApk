@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, Link } from 'expo-router';
+import { Link } from 'expo-router';
 import { asyncStorage } from '@/lib/storage/storage';
 import { useVerifyEmail } from '@/hooks/auth/useVerifyEmail';
 import { useResendCode } from '@/hooks/auth/useResendCode';
@@ -9,7 +9,6 @@ import { CodeInput } from '@/components/input/codeInput';
 import { Button } from '@/components/primitives/button';
 
 export default function VerificationCodeEmailScreen() {
-  const router = useRouter();
   const { verify, isLoading } = useVerifyEmail();
   const { resend, isLoading: resending } = useResendCode();
   const [email, setEmail] = useState('');

@@ -5,7 +5,7 @@ import { CheckoutStepper } from '@/components/checkout/checkoutStepper';
 import { Button } from '@/components/primitives/button';
 import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
-import { useBuyerDetailsStore, PAYMENT_METHODS } from '@/store/buyerDetailsStore';
+import { useBuyerDetailsStore } from '@/store/buyerDetailsStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/utils/format';
@@ -21,8 +21,6 @@ export default function Cart2Screen() {
   const { buyerDetails, setPaymentMethod } = useBuyerDetailsStore();
   const { formData } = useCheckoutStore();
   const totalPrice = useCartStore((s) => s.getTotalPrice());
-
-  const availableMethods = formData.delivery ? PAYMENT_METHODS.delivery : PAYMENT_METHODS.pickup;
 
   const visibleOptions = PAYMENT_OPTIONS.filter((o) => {
     if (formData.delivery) return o.id !== 'pickup';

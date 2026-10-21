@@ -46,6 +46,39 @@ export function useLocation(options?: { useGlobalStore?: boolean }) {
     useGlobalStore ? storeMunicipalityId || null : null
   );
 
+  const [selectionSource, setSelectionSource] = useState<{
+    province: string;
+    provinceId: string | null;
+    municipalityId: string | null;
+    useGlobalStore: boolean;
+  } | null>(null);
+
+  // Synchronize before children commit, preserving local edits until the saved location changes.
+  if (
+    selectionSource === null ||
+    selectionSource.province !== storeProvince ||
+    selectionSource.provinceId !== storeProvinceId ||
+    selectionSource.municipalityId !== storeMunicipalityId ||
+    selectionSource.useGlobalStore !== useGlobalStore
+  ) {
+    setSelectionSource({
+      province: storeProvince,
+      provinceId: storeProvinceId,
+      municipalityId: storeMunicipalityId,
+      useGlobalStore,
+    });
+    if (useGlobalStore) {
+      const province = provinces.find((item) => item.id === (storeProvinceId || ''));
+      const municipality = province?.municipios.find(
+        (item) => item.id === (storeMunicipalityId || '')
+      );
+      setSelectedProvince(province?.provincia ?? storeProvince ?? '');
+      setSelectedProvinceId(province?.id ?? storeProvinceId ?? null);
+      setSelectedMunicipality(municipality?.municipio ?? '');
+      setSelectedMunicipalityId(municipality?.id ?? null);
+    }
+  }
+
   useEffect(() => {
     if (!useGlobalStore) return;
 
@@ -62,11 +95,6 @@ export function useLocation(options?: { useGlobalStore?: boolean }) {
       setLocation(province.provincia, province.id, '', null);
       return;
     }
-
-    setSelectedProvince(province?.provincia ?? storeProvince ?? '');
-    setSelectedProvinceId(province?.id ?? storeProvinceId ?? null);
-    setSelectedMunicipality(municipality?.municipio ?? '');
-    setSelectedMunicipalityId(municipality?.id ?? null);
   }, [provinces, setLocation, storeMunicipalityId, storeProvince, storeProvinceId, useGlobalStore]);
 
   const handleProvinceChange = (province: ProvinceData) => {

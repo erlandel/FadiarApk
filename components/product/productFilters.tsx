@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } fro
 import { useState } from 'react';
 
 interface ProductFiltersProps {
-  categories: Array<{ key: string; label: string }>;
+  categories: { key: string; label: string }[];
   brands?: string[];
   maxPrice?: number;
   visible: boolean;
@@ -20,15 +20,13 @@ export function ProductFilters({
   visible,
   onClose,
 }: ProductFiltersProps) {
-  const {
-    selectedCategories,
-    selectedBrands,
-    selectedPrice,
-    toggleCategory,
-    setSelectedBrands,
-    setSelectedPrice,
-    clearFilters,
-  } = useFiltersStore();
+  const selectedCategories = useFiltersStore((state) => state.selectedCategories);
+  const selectedBrands = useFiltersStore((state) => state.selectedBrands);
+  const selectedPrice = useFiltersStore((state) => state.selectedPrice);
+  const toggleCategory = useFiltersStore((state) => state.toggleCategory);
+  const setSelectedBrands = useFiltersStore((state) => state.setSelectedBrands);
+  const setSelectedPrice = useFiltersStore((state) => state.setSelectedPrice);
+  const clearFilters = useFiltersStore((state) => state.clearFilters);
   const [minText, setMinText] = useState(String(selectedPrice?.[0] ?? 0));
   const [maxText, setMaxText] = useState(String(selectedPrice?.[1] ?? maxPrice));
   const { height } = useWindowDimensions();

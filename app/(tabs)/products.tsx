@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View, type ListRenderItemInfo } from 'react-native';
 import { ProductCard } from '@/components/product/productCard';
 import { ProductCardSkeleton } from '@/components/product/productCardSkeleton';
 import { StoreSelector } from '@/components/product/storeSelector';
@@ -16,8 +16,34 @@ import { useStoreProducts } from '@/hooks/products/useStoreProducts';
 import { useFiltersStore } from '@/store/filtersStore';
 import { normalizeText } from '@/utils/format';
 import { colors } from '@/lib/theme/colors';
-import type { Store } from '@/types/product';
+import type { Product, Store } from '@/types/product';
 import { usePathname } from 'expo-router';
+
+const SKELETON_ITEMS = [0, 1, 2, 3, 4, 5];
+const productKey = (item: Product) => item.id;
+const skeletonKey = (item: number) => `s-${item}`;
+const renderSkeleton = () => (
+  <View className="flex-1 px-2 py-2">
+    <ProductCardSkeleton />
+  </View>
+);
+const renderProduct = ({ item }: ListRenderItemInfo<Product>) => (
+  <View className="flex-1 px-2 py-2">
+    <ProductCard
+      productId={item.id}
+      title={item.name}
+      brand={item.brand}
+      category={item.categoria?.name}
+      warranty={item.warranty}
+      price={item.price}
+      temporalPrice={item.temporal_price}
+      image={item.img}
+      count={item.count}
+      currency={item.currency?.currency}
+      tiendaId={item.tiendaId}
+    />
+  </View>
+);
 
 export default function ProductsScreen() {
   const pathname = usePathname();
@@ -25,14 +51,12 @@ export default function ProductsScreen() {
   const { data: catalog, isLoading: contextLoading } = useCatalogContext({ enabled: isFocused });
   const { data: categoryTree = [] } = useCategories({ enabled: isFocused });
   const { data: brands = [] } = useBrands();
-  const {
-    selectedCategories,
-    toggleCategory,
-    selectedBrands,
-    selectedPrice,
-    isFilterOpen,
-    setIsFilterOpen,
-  } = useFiltersStore();
+  const selectedCategories = useFiltersStore((state) => state.selectedCategories);
+  const toggleCategory = useFiltersStore((state) => state.toggleCategory);
+  const selectedBrands = useFiltersStore((state) => state.selectedBrands);
+  const selectedPrice = useFiltersStore((state) => state.selectedPrice);
+  const isFilterOpen = useFiltersStore((state) => state.isFilterOpen);
+  const setIsFilterOpen = useFiltersStore((state) => state.setIsFilterOpen);
   const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false);
   const hasScrolledProducts = useRef(false);
@@ -92,10 +116,6 @@ export default function ProductsScreen() {
     );
   }, [productsQuery.data]);
 
-  const filteredProducts = useMemo(() => {
-    return allProducts;
-  }, [allProducts]);
-
   return (
     <View className="flex-1 bg-white">
       {isStoreSelectorOpen ? (
@@ -149,37 +169,17 @@ export default function ProductsScreen() {
       {contextLoading || productsQuery.isLoading ? (
         <FlatList
           numColumns={2}
-          data={Array.from({ length: 6 })}
-          keyExtractor={(_, i) => `s-${i}`}
-          renderItem={() => (
-            <View className="flex-1 px-2 py-2">
-              <ProductCardSkeleton />
-            </View>
-          )}
+          data={SKELETON_ITEMS}
+          keyExtractor={skeletonKey}
+          renderItem={renderSkeleton}
           contentContainerClassName="p-2"
         />
       ) : (
         <FlatList
           numColumns={2}
-          data={filteredProducts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View className="flex-1 px-2 py-2">
-              <ProductCard
-                productId={item.id}
-                title={item.name}
-                brand={item.brand}
-                category={item.categoria?.name}
-                warranty={item.warranty}
-                price={item.price}
-                temporalPrice={item.temporal_price}
-                image={item.img}
-                count={item.count}
-                currency={item.currency?.currency}
-                tiendaId={item.tiendaId}
-              />
-            </View>
-          )}
+          data={allProducts}
+          keyExtractor={productKey}
+          renderItem={renderProduct}
           onEndReached={() => {
             if (
               hasScrolledProducts.current &&

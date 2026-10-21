@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Animated, {
   cancelAnimation,
-  runOnJS,
+  ReduceMotion,
   useAnimatedStyle,
   useFrameCallback,
   useSharedValue,
   withDecay,
+  withDelay,
+  withTiming,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ProductCard } from './productCard';
@@ -47,58 +49,39 @@ export function ProductCarousel({
 
   const offset = useSharedValue(0);
   const dragStart = useSharedValue(0);
-  const paused = useSharedValue(false);
+  const paused = useSharedValue(0);
   const setWidthSv = useSharedValue(setWidth);
   const speedSv = useSharedValue(speed);
   const dirSv = useSharedValue(direction === 'left' ? 1 : -1);
 
-  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearResumeTimeout = useCallback(() => {
-    if (resumeTimeoutRef.current !== null) {
-      clearTimeout(resumeTimeoutRef.current);
-      resumeTimeoutRef.current = null;
-    }
-  }, []);
-
-  const scheduleResume = useCallback(() => {
-    clearResumeTimeout();
-    resumeTimeoutRef.current = setTimeout(() => {
-      paused.value = false;
-      resumeTimeoutRef.current = null;
-    }, RESUME_DELAY);
-  }, [clearResumeTimeout, paused]);
-
   useEffect(() => {
-    setWidthSv.value = setWidth;
-    speedSv.value = speed;
-    dirSv.value = direction === 'left' ? 1 : -1;
+    setWidthSv.set(setWidth);
+    speedSv.set(speed);
+    dirSv.set(direction === 'left' ? 1 : -1);
   }, [setWidth, speed, direction, setWidthSv, speedSv, dirSv]);
 
   useEffect(() => {
     return () => {
-      clearResumeTimeout();
       cancelAnimation(offset);
+      cancelAnimation(paused);
     };
-  }, [clearResumeTimeout, offset]);
+  }, [offset, paused]);
 
   // Auto-scroll en UI thread: ownership total del offset, sin física nativa.
   // Solo activo con la pantalla enfocada para no saturar el hilo al cambiar de ruta.
   const frameCallback = useFrameCallback((frame) => {
     'worklet';
-    if (paused.value || setWidthSv.value <= 0) return;
+    if (paused.get() || setWidthSv.get() <= 0) return;
 
     const dtMs = frame.timeSincePreviousFrame;
     if (dtMs == null) return;
 
     const dt = Math.min(dtMs, 64) / 1000;
-    offset.value += speedSv.value * dirSv.value * dt;
+    const nextOffset = offset.get() + speedSv.get() * dirSv.get() * dt;
 
-    const w = setWidthSv.value;
+    const w = setWidthSv.get();
     // Evita drift de precisión en floats tras mucho tiempo.
-    if (offset.value >= w * 8 || offset.value < 0) {
-      offset.value = ((offset.value % w) + w) % w;
-    }
+    offset.set(nextOffset >= w * 8 || nextOffset < 0 ? ((nextOffset % w) + w) % w : nextOffset);
   }, false);
 
   useFocusEffect(
@@ -107,17 +90,17 @@ export function ProductCarousel({
       return () => {
         frameCallback.setActive(false);
         cancelAnimation(offset);
-        paused.value = false;
-        clearResumeTimeout();
+        cancelAnimation(paused);
+        paused.set(0);
       };
-    }, [frameCallback, offset, paused, clearResumeTimeout])
+    }, [frameCallback, offset, paused])
   );
 
   const animatedStyle = useAnimatedStyle(() => {
-    const w = setWidthSv.value;
+    const w = setWidthSv.get();
     if (w <= 0) return { transform: [{ translateX: 0 }] };
 
-    const x = ((offset.value % w) + w) % w;
+    const x = ((offset.get() % w) + w) % w;
     return { transform: [{ translateX: -x }] };
   });
 
@@ -130,36 +113,42 @@ export function ProductCarousel({
         .onBegin(() => {
           'worklet';
           cancelAnimation(offset);
-          paused.value = true;
-          dragStart.value = offset.value;
-          runOnJS(clearResumeTimeout)();
+          cancelAnimation(paused);
+          paused.set(1);
+          dragStart.set(offset.get());
         })
         .onUpdate((e) => {
           'worklet';
           // Dedo a la derecha → contenido a la derecha → offset baja.
-          offset.value = dragStart.value - e.translationX;
+          offset.set(dragStart.get() - e.translationX);
         })
         .onEnd((e) => {
           'worklet';
-          offset.value = withDecay(
-            {
-              velocity: -e.velocityX,
-              deceleration: DECAY_DECELERATION,
-            },
-            () => {
-              'worklet';
-              runOnJS(scheduleResume)();
-            }
+          offset.set(
+            withDecay(
+              {
+                velocity: -e.velocityX,
+                deceleration: DECAY_DECELERATION,
+              },
+              (finished) => {
+                'worklet';
+                if (finished) {
+                  paused.set(
+                    withDelay(RESUME_DELAY, withTiming(0, { duration: 0 }), ReduceMotion.Never)
+                  );
+                }
+              }
+            )
           );
         })
         .onFinalize((_, success) => {
           'worklet';
           // Gesto cancelado (p. ej. falló por scroll vertical): reanudar igual.
           if (!success) {
-            runOnJS(scheduleResume)();
+            paused.set(withDelay(RESUME_DELAY, withTiming(0, { duration: 0 }), ReduceMotion.Never));
           }
         }),
-    [clearResumeTimeout, scheduleResume, offset, paused, dragStart]
+    [offset, paused, dragStart]
   );
 
   if (!products || products.length === 0 || setWidth === 0) return null;
