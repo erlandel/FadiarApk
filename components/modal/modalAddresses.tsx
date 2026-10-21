@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } 
 import { ChevronDown, X } from 'lucide-react-native';
 
 import { useLocation } from '@/hooks/location/useLocation';
+import { ToastRoot } from '@/messages/toastConfig';
 import type { MunicipalityData, ProvinceData } from '@/types/location';
 
 interface ModalAddressesProps {
@@ -232,6 +233,7 @@ export default function ModalAddresses({
         </View>
       </View>
 
+      {isOpen && <ToastRoot />}
       <Modal
         visible={openDropdown !== null}
         transparent
@@ -283,6 +285,7 @@ export default function ModalAddresses({
             </Pressable>
           ) : null}
         </Pressable>
+        {isOpen && openDropdown !== null && <ToastRoot />}
       </Modal>
     </Modal>
   );

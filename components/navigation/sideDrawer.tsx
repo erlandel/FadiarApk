@@ -6,6 +6,7 @@ import { useFiltersStore } from '@/store/filtersStore';
 import { flattenCategories, useCategories } from '@/hooks/products/useCategories';
 import { normalizeText } from '@/utils/format';
 import { toastInfo } from '@/messages/toast';
+import { ToastRoot } from '@/messages/toastConfig';
 import { Icon } from '@/icons/lucideIcon';
 import { CustomIcon } from '@/icons/customIcon';
 import { colors } from '@/lib/theme/colors';
@@ -326,6 +327,7 @@ export function SideDrawer({ isOpen, setIsOpen }: SideDrawerProps) {
           </View>
         </View>
       </View>
+      <ToastRoot />
     </RNModal>
   );
 }

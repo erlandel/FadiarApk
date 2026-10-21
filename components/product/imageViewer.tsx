@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ToastRoot } from '@/messages/toastConfig';
 import { ActivityIndicator, FlatList, Modal, Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -268,6 +269,7 @@ function ViewerSession({ images, initialIndex, onClose }: ImageViewerProps) {
           ) : null}
         </SafeAreaView>
       </GestureHandlerRootView>
+      <ToastRoot />
     </Modal>
   );
 }

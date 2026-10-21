@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Icon, type LucideIconName } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
+import { ToastRoot } from '@/messages/toastConfig';
 
 export interface OrderInformationModalProps {
   visible: boolean;
@@ -116,6 +117,7 @@ export function OrderInformationModal({
           </ScrollView>
         </View>
       </View>
+      {visible && <ToastRoot />}
     </RNModal>
   );
 }

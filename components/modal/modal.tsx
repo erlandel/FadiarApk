@@ -2,6 +2,7 @@ import { Modal as RNModal, Pressable, Text, useWindowDimensions, View } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
+import { ToastRoot } from '@/messages/toastConfig';
 
 export interface ModalProps {
   visible: boolean;
@@ -32,6 +33,7 @@ export function Modal({ visible, onClose, title, children }: ModalProps) {
           {children}
         </View>
       </View>
+      {visible && <ToastRoot />}
     </RNModal>
   );
 }

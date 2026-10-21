@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Modal, Pressable, Text, View } from 'react
 import { ChevronDown } from 'lucide-react-native';
 import { useLocation } from '@/hooks/location/useLocation';
 import { colors } from '@/lib/theme/colors';
+import { ToastRoot } from '@/messages/toastConfig';
 import type { MunicipalityData, ProvinceData } from '@/types/location';
 
 type ModalProductsByLocationProps = {
@@ -196,6 +197,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
             </Pressable>
           )}
         </Pressable>
+        {openDropdown !== null && <ToastRoot />}
       </Modal>
     </View>
   );

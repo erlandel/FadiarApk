@@ -1,6 +1,7 @@
 import { Modal as RNModal, Pressable, Text, View } from 'react-native';
 import { Icon } from '@/icons/lucideIcon';
 import { colors } from '@/lib/theme/colors';
+import { ToastRoot } from '@/messages/toastConfig';
 
 export interface CancelOrderModalProps {
   visible: boolean;
@@ -58,6 +59,7 @@ export function CancelOrderModal({
           </View>
         </View>
       </View>
+      {visible && <ToastRoot />}
     </RNModal>
   );
 }

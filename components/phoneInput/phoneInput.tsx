@@ -1,12 +1,6 @@
 import { useMemo, useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ToastRoot } from '@/messages/toastConfig';
+import { FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { ChevronDown, ChevronUp, Search, X } from 'lucide-react-native';
 
 import countriesData from '@/data/countries.json';
@@ -31,9 +25,7 @@ interface PhoneInputProps {
 }
 
 const getCountryFlag = (code: string) =>
-  code
-    .toUpperCase()
-    .replace(/./g, (letter) => String.fromCodePoint(127397 + letter.charCodeAt(0)));
+  code.toUpperCase().replace(/./g, (letter) => String.fromCodePoint(127397 + letter.charCodeAt(0)));
 
 const COUNTRIES: Country[] = countriesData.map((country) => ({
   code: country.code,
@@ -44,7 +36,7 @@ const COUNTRIES: Country[] = countriesData.map((country) => ({
 }));
 
 const SORTED_BY_PHONE_CODE = [...COUNTRIES].sort(
-  (first, second) => second.phoneCode.length - first.phoneCode.length,
+  (first, second) => second.phoneCode.length - first.phoneCode.length
 );
 
 const normalizeText = (value: string) =>
@@ -69,7 +61,7 @@ export default function PhoneInput({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<Country>(
-    () => COUNTRIES.find((country) => country.code === defaultCountry.code) ?? COUNTRIES[0],
+    () => COUNTRIES.find((country) => country.code === defaultCountry.code) ?? COUNTRIES[0]
   );
 
   const parsedValue = useMemo(() => {
@@ -87,7 +79,7 @@ export default function PhoneInput({
     }
 
     const matchedCountry = SORTED_BY_PHONE_CODE.find((country) =>
-      trimmedValue.startsWith(country.phoneCode),
+      trimmedValue.startsWith(country.phoneCode)
     );
 
     return {
@@ -101,10 +93,11 @@ export default function PhoneInput({
   const currentCountry =
     !parsedValue.phoneCode || selectedCountry.phoneCode === parsedValue.phoneCode
       ? selectedCountry
-      :
-        COUNTRIES.find((country) => country.phoneCode === parsedValue.phoneCode && country.code === 'US') ??
+      : (COUNTRIES.find(
+          (country) => country.phoneCode === parsedValue.phoneCode && country.code === 'US'
+        ) ??
         COUNTRIES.find((country) => country.phoneCode === parsedValue.phoneCode) ??
-        selectedCountry;
+        selectedCountry);
 
   const filteredCountries = useMemo(() => {
     const query = normalizeText(searchQuery.trim());
@@ -130,20 +123,21 @@ export default function PhoneInput({
 
   return (
     <>
-      <View className="h-14 w-full flex-row items-center rounded-xl bg-surface px-4">
+      <View className="bg-surface h-14 w-full flex-row items-center rounded-xl px-4">
         <Pressable
           onPress={() => setIsOpen(true)}
           className="flex-row items-center"
           accessibilityRole="button"
-          accessibilityLabel="Seleccionar país"
-        >
-          <Text className="text-2xl mr-1">{currentCountry.flag}</Text>
+          accessibilityLabel="Seleccionar país">
+          <Text className="mr-1 text-2xl">{currentCountry.flag}</Text>
 
-          {isOpen ? <ChevronUp size={18} color="#6B7280" /> : <ChevronDown size={18} color="#6B7280" />}
+          {isOpen ? (
+            <ChevronUp size={18} color="#6B7280" />
+          ) : (
+            <ChevronDown size={18} color="#6B7280" />
+          )}
 
-          <Text className="ml-1 text-md font-medium text-gray-700">
-            {currentCountry.phoneCode}
-          </Text>
+          <Text className="text-md ml-1 font-medium text-gray-700">{currentCountry.phoneCode}</Text>
         </Pressable>
 
         <Text className="mx-3 text-gray-500">|</Text>
@@ -163,18 +157,20 @@ export default function PhoneInput({
         visible={isOpen}
         transparent
         animationType="fade"
-        onRequestClose={() => setIsOpen(false)}
-      >
+        onRequestClose={() => setIsOpen(false)}>
         <View className="flex-1 bg-white p-4">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-primary">Seleccionar país</Text>
+            <Text className="text-primary text-xl font-bold">Seleccionar país</Text>
 
-            <Pressable onPress={() => setIsOpen(false)} hitSlop={8} accessibilityLabel="Cerrar selector de país">
+            <Pressable
+              onPress={() => setIsOpen(false)}
+              hitSlop={8}
+              accessibilityLabel="Cerrar selector de país">
               <X size={24} color="#6B7280" />
             </Pressable>
           </View>
 
-          <View className="mb-3 flex-row items-center rounded-xl bg-surface px-3">
+          <View className="bg-surface mb-3 flex-row items-center rounded-xl px-3">
             <Search size={20} color="#9CA3AF" />
 
             <TextInput
@@ -195,8 +191,7 @@ export default function PhoneInput({
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => handleCountrySelect(item)}
-                className="flex-row items-center border-b border-gray-100 py-3 pl-2 pr-4"
-              >
+                className="flex-row items-center border-b border-gray-100 py-3 pr-4 pl-2">
                 <Text className="mr-3 text-2xl">{item.flag}</Text>
                 <Text className="flex-1 text-base text-gray-700">{item.name}</Text>
                 <Text className="text-sm text-gray-400">{item.phoneCode}</Text>
@@ -207,6 +202,7 @@ export default function PhoneInput({
             }
           />
         </View>
+        {isOpen && <ToastRoot />}
       </Modal>
     </>
   );

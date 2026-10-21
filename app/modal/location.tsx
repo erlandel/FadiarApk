@@ -2,6 +2,7 @@ import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ModalProductsByLocation } from 'components/modal/modalProductsByLocation';
 import { useProductsByLocationStore } from '@/store/productsByLocationStore';
+import { ToastRoot } from '@/messages/toastConfig';
 
 export default function LocationModalScreen() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function LocationModalScreen() {
       <View className="w-full items-center px-4 pt-16">
         <ModalProductsByLocation onClose={close} />
       </View>
+      <ToastRoot />
     </View>
   );
 }

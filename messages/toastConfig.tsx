@@ -1,24 +1,40 @@
-import Toast, { type ToastConfig } from 'react-native-toast-message';
-import { Text, View } from 'react-native';
-import { colors } from '@/lib/theme/colors';
+import { useEffect, useState } from 'react';
+import Toast from 'react-native-toast-message';
+import { AccessibilityInfo } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { restoreActiveToast, TOAST_DURATION } from './toast';
 
-function BaseToast({ text1, text2 }: { text1?: string; text2?: string }) {
-  return (
-    <View className="mx-4 rounded-xl bg-primary px-4 py-3">
-      {text1 ? <Text className="text-sm font-bold text-white">{text1}</Text> : null}
-      {text2 ? <Text className="text-sm text-white/90">{text2}</Text> : null}
-    </View>
-  );
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(true);
+  useEffect(() => {
+    let active = true;
+    void AccessibilityInfo.isReduceMotionEnabled().then((value) => {
+      if (active) setReduced(value);
+    });
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduced);
+    return () => {
+      active = false;
+      subscription.remove();
+    };
+  }, []);
+  return reduced;
 }
-
-export const toastConfig: ToastConfig = {
-  success: (internal) => <BaseToast {...internal} />,
-  error: (internal) => <BaseToast {...internal} />,
-  info: (internal) => <BaseToast {...internal} />,
-};
 
 export function ToastRoot() {
-  return <Toast config={toastConfig} />;
+  const insets = useSafeAreaInsets();
+  const reducedMotion = useReducedMotion();
+  useEffect(() => {
+    restoreActiveToast();
+    return () => {
+      requestAnimationFrame(restoreActiveToast);
+    };
+  }, []);
+  return (
+    <Toast
+      position="top"
+      topOffset={insets.top + 12}
+      visibilityTime={TOAST_DURATION}
+      animationConfig={reducedMotion ? { type: 'timing', duration: 0 } : undefined}
+    />
+  );
 }
-
-export { colors };
