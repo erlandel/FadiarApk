@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { memo, useCallback, useState } from 'react';
+import { AppState, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { Image } from 'expo-image';
 import Animated, { Easing, ZoomOut, ZoomIn } from 'react-native-reanimated';
 
@@ -16,20 +17,39 @@ const ZOOM_OUT_MS = 1000;
 const ZOOM_IN_MS = 2000;
 
 const TABLET_BREAKPOINT = 768;
+const ENTER_ANIMATION = ZoomIn.duration(ZOOM_IN_MS).easing(Easing.inOut(Easing.ease));
+const EXIT_ANIMATION = ZoomOut.duration(ZOOM_OUT_MS).easing(Easing.inOut(Easing.ease));
 
-export function BannerPot() {
+function BannerPotComponent() {
   const { width } = useWindowDimensions();
   const isTablet = width >= TABLET_BREAKPOINT;
 
   const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((prev) => (prev + 1) % POT_IMAGES.length);
-    }, ROTATION_MS);
+  useFocusEffect(
+    useCallback(() => {
+      let interval: ReturnType<typeof setInterval> | null = null;
+      const stop = () => {
+        if (interval !== null) clearInterval(interval);
+        interval = null;
+      };
+      const updateActivity = () => {
+        stop();
+        if (AppState.currentState === 'active') {
+          interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % POT_IMAGES.length);
+          }, ROTATION_MS);
+        }
+      };
 
-    return () => clearInterval(id);
-  }, []);
+      updateActivity();
+      const subscription = AppState.addEventListener('change', updateActivity);
+      return () => {
+        subscription.remove();
+        stop();
+      };
+    }, [])
+  );
 
   const bannerHeight = isTablet ? 'h-[320px]' : 'h-[400px]';
   const potSize = isTablet ? 'w-[260px] h-[260px]' : 'w-[240px] h-[240px]';
@@ -39,16 +59,7 @@ export function BannerPot() {
       {/* Fondo: Banner.webp */}
       <Image
         source={BANNER_BG}
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 0,
-        }}
+        style={styles.background}
         contentFit="cover"
         contentPosition="center"
         pointerEvents="none"
@@ -56,29 +67,19 @@ export function BannerPot() {
 
       {/* Contenido: móvil = columna (texto arriba, imagen abajo); tablet = fila */}
       <View
-        className={`flex-1 gap-5 px-4 mt-8 ${
+        className={`mt-8 flex-1 gap-5 px-4 ${
           isTablet
             ? 'flex-row items-center justify-between'
             : 'flex-col items-center justify-between'
-        }`}
-      >
+        }`}>
         <View className={isTablet ? 'flex-1' : 'items-start'}>
-          <Text
-            className={`font-bold text-left ${
-              isTablet ? 'text-4xl' : 'text-3xl'
-            }`}
-          >
+          <Text className={`text-left font-bold ${isTablet ? 'text-4xl' : 'text-3xl'}`}>
             <Text className="text-accent">Diversidad de soluciones</Text>
             <Text className="text-white">{`\npara cada espacio de tu hogar`}</Text>
           </Text>
-          <Text
-            className={`mt-6 text-white/85 ${
-              isTablet ? 'text-xl' : ' text-lg'
-            }`}
-          >
-            Ponemos a tu alcance una amplia gama de electrodomésticos que
-            combinan tecnología, funcionalidad y diseño para crear un hogar
-            más eficiente para el día a día.
+          <Text className={`mt-6 text-white/85 ${isTablet ? 'text-xl' : 'text-lg'}`}>
+            Ponemos a tu alcance una amplia gama de electrodomésticos que combinan tecnología,
+            funcionalidad y diseño para crear un hogar más eficiente para el día a día.
           </Text>
         </View>
 
@@ -88,27 +89,13 @@ export function BannerPot() {
             i === index ? (
               <Animated.View
                 key={i}
-                entering={ZoomIn.duration(ZOOM_IN_MS).easing(
-                  Easing.inOut(Easing.ease),
-                )}
-                exiting={ZoomOut.duration(ZOOM_OUT_MS).easing(
-                  Easing.inOut(Easing.ease),
-                )}
+                entering={ENTER_ANIMATION}
+                exiting={EXIT_ANIMATION}
                 style={StyleSheet.absoluteFill}
-                pointerEvents="none"
-              >
-                <Image
-                  source={src}
-                  style={{
-                    width: '130%',
-                    height: '130%',
-                    marginLeft: '-15%',
-                    marginTop: '-20%',
-                  }}
-                  contentFit="contain"
-                />
+                pointerEvents="none">
+                <Image source={src} style={styles.pot} contentFit="contain" />
               </Animated.View>
-            ) : null,
+            ) : null
           )}
         </View>
       </View>
@@ -116,4 +103,20 @@ export function BannerPot() {
   );
 }
 
+const styles = StyleSheet.create({
+  background: {
+    ...StyleSheet.absoluteFill,
+    width: '100%',
+    height: '100%',
+    zIndex: 0,
+  },
+  pot: {
+    width: '130%',
+    height: '130%',
+    marginLeft: '-15%',
+    marginTop: '-20%',
+  },
+});
+
+export const BannerPot = memo(BannerPotComponent);
 export default BannerPot;

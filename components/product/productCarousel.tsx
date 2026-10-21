@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { AppState, StyleSheet, useWindowDimensions, View, type AppStateStatus } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Animated, {
   cancelAnimation,
@@ -68,7 +68,7 @@ export function ProductCarousel({
   }, [offset, paused]);
 
   // Auto-scroll en UI thread: ownership total del offset, sin física nativa.
-  // Solo activo con la pantalla enfocada para no saturar el hilo al cambiar de ruta.
+  // Solo activo con la pantalla enfocada y la aplicación en primer plano.
   const frameCallback = useFrameCallback((frame) => {
     'worklet';
     if (paused.get() || setWidthSv.get() <= 0) return;
@@ -86,12 +86,22 @@ export function ProductCarousel({
 
   useFocusEffect(
     useCallback(() => {
-      frameCallback.setActive(true);
-      return () => {
+      const stop = () => {
         frameCallback.setActive(false);
         cancelAnimation(offset);
         cancelAnimation(paused);
         paused.set(0);
+      };
+      const updateActivity = (state: AppStateStatus) => {
+        if (state === 'active') frameCallback.setActive(true);
+        else stop();
+      };
+
+      updateActivity(AppState.currentState);
+      const subscription = AppState.addEventListener('change', updateActivity);
+      return () => {
+        subscription.remove();
+        stop();
       };
     }, [frameCallback, offset, paused])
   );

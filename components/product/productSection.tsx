@@ -1,7 +1,10 @@
+import { memo } from 'react';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { ProductCardSkeleton } from './productCardSkeleton';
 import { getProductCardWidth, ProductCarousel } from './productCarousel';
 import type { Product } from '@/types/product';
+
+const EMPTY_PRODUCTS: Product[] = [];
 
 export interface ProductSectionProps {
   position?: 'vertical' | 'horizontal';
@@ -12,9 +15,9 @@ export interface ProductSectionProps {
   direction?: 'left' | 'right';
 }
 
-export function ProductSection({
+function ProductSectionComponent({
   title,
-  products = [],
+  products = EMPTY_PRODUCTS,
   isLoading = false,
   skeletonCount = 5,
   direction = 'left',
@@ -50,3 +53,5 @@ export function ProductSection({
     </View>
   );
 }
+
+export const ProductSection = memo(ProductSectionComponent);

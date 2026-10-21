@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { ProductSection } from '@/components/product/productSection';
 import { useFeaturedProducts } from '@/hooks/products/useFeaturedProducts';
@@ -15,6 +16,10 @@ export default function HomeScreen() {
     isError,
   } = useFeaturedProducts({ enabled: isFocused });
   const upcoming = useUpcomingProducts({ enabled: isFocused });
+  const upcomingProducts = useMemo(
+    () => upcoming.data?.map((product) => ({ ...product, isPreSale: true })),
+    [upcoming.data]
+  );
 
   const showGlobalNoProducts =
     !featuredLoading &&
@@ -62,7 +67,7 @@ export default function HomeScreen() {
               {upcoming.isLoading || upcoming.data?.length ? (
                 <ProductSection
                   title="Próximamente"
-                  products={upcoming.data?.map((p) => ({ ...p, isPreSale: true }))}
+                  products={upcomingProducts}
                   isLoading={upcoming.isLoading}
                   direction="right"
                 />
