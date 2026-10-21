@@ -1,12 +1,17 @@
 export type OrderProduct = {
   name: string;
   brand: string;
-  price: number;
+  price: number | string;
   temporal_price?: number | string;
   currency?: {
     currency: string;
   };
-  img: string;
+  img?: string | null;
+  preview_img?: string | null;
+  image?: string | null;
+  image_url?: string | null;
+  img_web?: string | null;
+  preview_img_web?: string | null;
   count: number;
 };
 
@@ -23,26 +28,26 @@ export type Order = {
   codigo: string;
   date: string;
   time: string;
-  client_ci: string;
+  client_ci?: string;
   client_name?: string;
   client_last_names?: string;
-  client_cell: string;
+  client_cell?: string;
   client_cell2?: string;
-  direccion: string;
-  tipo_pago: string;
+  direccion?: string;
+  tipo_pago?: string;
   municipio_completo?: {
     municipio: string;
   };
   provincia_completa?: {
     provincia: string;
   };
-  tienda: {
+  tienda?: {
     name: string;
     direccion: string;
   };
   nota?: OrderNote[];
   status: 'En espera' | 'Confirmado' | 'Cancelado' | string;
-  products: OrderProduct[];
+  products?: OrderProduct[];
 };
 
 export type Statistic = {

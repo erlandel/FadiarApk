@@ -7,6 +7,50 @@ export interface OrdersPage {
   hasMore: boolean;
 }
 
+function firstText(...values: unknown[]): string | undefined {
+  const value = values.find((item) => typeof item === 'string' && item.trim().length > 0);
+  return typeof value === 'string' ? value.trim() : undefined;
+}
+
+function mapOrderProduct(rawProduct: any): OrderProduct {
+  const nestedProduct = rawProduct?.producto ?? rawProduct?.product ?? rawProduct;
+  const image = firstText(
+    rawProduct?.img,
+    rawProduct?.image,
+    rawProduct?.image_url,
+    rawProduct?.img_web,
+    nestedProduct?.img,
+    nestedProduct?.image,
+    nestedProduct?.image_url,
+    nestedProduct?.img_web
+  );
+  const previewImage = firstText(
+    rawProduct?.preview_img,
+    rawProduct?.preview_image,
+    rawProduct?.preview_img_web,
+    nestedProduct?.preview_img,
+    nestedProduct?.preview_image,
+    nestedProduct?.preview_img_web
+  );
+
+  const rawCount =
+    rawProduct?.count ?? rawProduct?.quantity ?? rawProduct?.en_carrito ?? nestedProduct?.count;
+  const count = Number(rawCount);
+
+  return {
+    ...nestedProduct,
+    ...rawProduct,
+    name: firstText(rawProduct?.name, nestedProduct?.name) ?? 'Producto',
+    brand: firstText(rawProduct?.brand, nestedProduct?.brand) ?? '',
+    price: rawProduct?.price ?? nestedProduct?.price ?? 0,
+    temporal_price: rawProduct?.temporal_price ?? nestedProduct?.temporal_price,
+    currency: rawProduct?.currency ?? nestedProduct?.currency,
+    img: image ?? null,
+    preview_img: previewImage ?? null,
+    count: Number.isFinite(count) ? count : 0,
+  };
+}
+
 function mapOrder(order: any): Order {
   let dateStr = order.date || '';
   let finalDate = dateStr;
@@ -33,7 +77,15 @@ function mapOrder(order: any): Order {
   const hasPlus = order.client_cell && order.client_cell.includes('+');
   if (hasDirection && cell2 && !hasPlus) finalCell = cell2;
 
-  return { ...order, date: finalDate, time: finalTime, status: finalStatus, client_cell: finalCell };
+  return {
+    ...order,
+    id: String(order.id),
+    codigo: String(order.codigo ?? order.id),
+    date: finalDate,
+    time: finalTime,
+    status: finalStatus,
+    client_cell: finalCell,
+  };
 }
 
 export async function fetchOrders(lastId = '', size = 10, searchText = ''): Promise<OrdersPage> {
@@ -46,13 +98,17 @@ export async function fetchOrders(lastId = '', size = 10, searchText = ''): Prom
   return { orders: processedData, hasMore: data.length > size + 10 };
 }
 
-export async function fetchOrderProducts(orderId: string): Promise<OrderProduct[] | null> {
+export async function fetchOrderProducts(orderId: string | number): Promise<OrderProduct[] | null> {
   const { data } = await apiClient.post(ENDPOINTS.getOrderProducts, { id_order: orderId });
-  if (data && data.products && Array.isArray(data.products)) return data.products;
-  return [];
+  const rawProducts = Array.isArray(data?.products)
+    ? data.products
+    : Array.isArray(data)
+      ? data
+      : [];
+  return rawProducts.map(mapOrderProduct);
 }
 
-export async function fetchOrderNote(orderId: string): Promise<OrderNote[] | null> {
+export async function fetchOrderNote(orderId: string | number): Promise<OrderNote[] | null> {
   const { data } = await apiClient.post(ENDPOINTS.getOrderNote, { id_order: orderId });
   if (data && data.messages && Array.isArray(data.messages) && data.messages.length > 0) {
     return data.messages;
@@ -60,6 +116,6 @@ export async function fetchOrderNote(orderId: string): Promise<OrderNote[] | nul
   return null;
 }
 
-export async function denyOrder(orderId: string): Promise<void> {
+export async function denyOrder(orderId: string | number): Promise<void> {
   await apiClient.post(ENDPOINTS.denyOrder, { id_order: orderId });
 }

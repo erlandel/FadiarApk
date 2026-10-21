@@ -3,9 +3,12 @@ import {
   ArrowLeft,
   ArrowRight,
   Banknote,
+  CalendarClock,
+  CheckCircle,
   ChevronDown,
   ChevronUp,
   CircleUser,
+  FileText,
   Funnel,
   House,
   Image,
@@ -39,9 +42,12 @@ const ICONS = {
   ChevronDown,
   ChevronUp,
   CircleUser,
+  CalendarClock,
+  CheckCircle,
   Eye,
   EyeOff,
   Funnel,
+  FileText,
   House,
   Image,
   Lock,
@@ -73,7 +79,13 @@ export interface IconProps {
   className?: string;
 }
 
-export function Icon({ name, size = 24, color = colors.primary, strokeWidth = 2, className }: IconProps) {
+export function Icon({
+  name,
+  size = 24,
+  color = colors.primary,
+  strokeWidth = 2,
+  className,
+}: IconProps) {
   const Cmp = ICONS[name as LucideIconName] as ComponentType<any> | undefined;
   if (!Cmp) return null;
   return createElement(Cmp, {

@@ -5,6 +5,7 @@
 @import 'nativewind/theme';
 
 @theme {
+  --text-md: 1rem;
   --color-primary: #022854;
   --color-primary-hover: #034078;
   --color-accent: #d69f04;

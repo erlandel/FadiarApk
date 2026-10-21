@@ -215,6 +215,7 @@ export default function ProductsScreen() {
       )}
 
       <ProductFilters
+        key={`${isFilterOpen ? 'open' : 'closed'}-${catalog?.maxPrice ?? 0}-${selectedPrice?.[0] ?? ''}-${selectedPrice?.[1] ?? ''}`}
         categories={availableCategories}
         brands={brands}
         maxPrice={catalog?.maxPrice ?? 0}

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { denyOrder } from '../../data/services/orders.service';
-import { toastSuccess } from '@/messages/toast';
+import { toastError, toastSuccess } from '@/messages/toast';
 
 export function useCancelOrder() {
   const queryClient = useQueryClient();
@@ -13,11 +13,18 @@ export function useCancelOrder() {
         return {
           ...old,
           orders: old.orders.map((order: any) =>
-            order.id === orderId ? { ...order, status: 'Cancelado' } : order,
+            order.id === orderId ? { ...order, status: 'Cancelado' } : order
           ),
         };
       });
       toastSuccess('Orden cancelada correctamente');
+    },
+    onError: (error: any) => {
+      toastError(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          'No se pudo cancelar la orden'
+      );
     },
   });
 

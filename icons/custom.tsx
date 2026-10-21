@@ -166,6 +166,19 @@ export function WhatsApp(props: Props) {
   );
 }
 
+export function ChatBubbleEllipsis(props: Props) {
+  return (
+    <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
+      <Path
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.177 7.152.521 1.942.287 3.348 1.968 3.348 3.93v7.094c0 1.962-1.406 3.643-3.348 3.93a49.207 49.207 0 0 1-4.062.432l-3.35 3.35a.75.75 0 0 1-1.28-.53v-3.056c-1.84-.132-3.626-.407-5.32-.826C3.406 17.062 2 15.381 2 13.419V6.702c0-1.962 1.406-3.643 3.348-3.931a.75.75 0 0 1 .144-.02zM8.25 9.75a.75.75 0 1 0 0 1.5a.75.75 0 0 0 0-1.5zm3.75.75a.75.75 0 1 1 1.5 0a.75.75 0 0 1-1.5 0zm4.5-.75a.75.75 0 1 0 0 1.5a.75.75 0 0 0 0-1.5z"
+      />
+    </Svg>
+  );
+}
+
 export function LocationIcon(props: Props) {
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" {...props}>
