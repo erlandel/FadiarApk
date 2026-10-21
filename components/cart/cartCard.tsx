@@ -4,7 +4,8 @@ import { buildImageUrl } from '@/lib/api/config';
 import { colors } from '@/lib/theme/colors';
 import { formatCountdown } from '@/utils/format';
 import { useClockStore } from '@/store/clockStore';
-import { Icon } from '@/icons/lucideIcon';
+import { useIsMutating } from '@tanstack/react-query';
+import { FlashingTrash } from '@/components/loading/flashingTrash';
 import { cn } from '@/utils/cn';
 
 export interface CartCardProps {
@@ -40,6 +41,10 @@ export function CartCard({
   readonly = false,
 }: CartCardProps) {
   const currentTime = useClockStore((s) => s.currentTime);
+  const deleting = useIsMutating({
+    mutationKey: ['deleteCartProduct'],
+    predicate: (mutation) => mutation.state.variables === cartId,
+  }) > 0;
   const hasDiscount = !!temporalPrice && Number(temporalPrice) > 0 && Number(temporalPrice) !== 0;
 
   return (
@@ -96,8 +101,13 @@ export function CartCard({
           )}
 
           {!readonly && onDelete ? (
-            <Pressable onPress={() => onDelete(cartId!)} hitSlop={8}>
-              <Icon name="Trash2" size={22} color={colors.text} />
+            <Pressable
+              onPress={() => onDelete(cartId!)}
+              disabled={deleting}
+              accessibilityLabel="Eliminar producto del carrito"
+              accessibilityState={{ busy: deleting, disabled: deleting }}
+              hitSlop={8}>
+              <FlashingTrash active={deleting} color={deleting ? '#EF4444' : colors.text} />
             </Pressable>
           ) : null}
         </View>

@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { FloatingScrollView as ScrollView } from '@/components/floatingActions/floatingScrollView';
 import { useRouter } from 'expo-router';
 import { ProtectedScreen } from '@/components/navigation/protectedScreen';
 import PersonalData from '@/components/profile/personalData';

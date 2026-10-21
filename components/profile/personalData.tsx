@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 import { Eye, EyeOff, Pencil, Trash2 } from 'lucide-react-native';
 
 import { ProfileInput } from '@/components/input/profileInput';
@@ -132,7 +133,7 @@ export default function PersonalData() {
             hitSlop={8}>
             {isPersonalDataPending ? (
               <View className="flex-row items-center">
-                <ActivityIndicator size="small" color="#D69F04" />
+                <LoadingSpinner size="small" color="#D69F04" />
 
                 <Text className="ml-1 font-bold text-[#D69F04]">Guardar</Text>
               </View>
@@ -202,7 +203,7 @@ export default function PersonalData() {
         <View className="bg-surface mt-2 min-h-25 rounded-lg px-2 py-3">
           {isLoadingAddresses ? (
             <View className="h-20 items-center justify-center">
-              <ActivityIndicator size="small" color="#D69F04" />
+              <LoadingSpinner size="small" color="#D69F04" />
             </View>
           ) : isErrorAddresses ? (
             <View className="items-center justify-center py-4">
@@ -239,7 +240,7 @@ export default function PersonalData() {
                         disabled={deletingId === address.id || isDeleting}
                         hitSlop={8}>
                         {deletingId === address.id ? (
-                          <ActivityIndicator size="small" color="#EF4444" />
+                          <LoadingSpinner size="small" color="#EF4444" />
                         ) : (
                           <Trash2 size={21} color="#EF4444" strokeWidth={2} />
                         )}
@@ -279,7 +280,7 @@ export default function PersonalData() {
             hitSlop={8}>
             {isPasswordPending ? (
               <View className="flex-row items-center">
-                <ActivityIndicator size="small" color="#D69F04" />
+                <LoadingSpinner size="small" color="#D69F04" />
 
                 <Text className="ml-1 font-bold text-[#D69F04]">Actualizar</Text>
               </View>

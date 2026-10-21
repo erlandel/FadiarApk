@@ -18,6 +18,8 @@ import { normalizeText } from '@/utils/format';
 import { colors } from '@/lib/theme/colors';
 import type { Product, Store } from '@/types/product';
 import { usePathname } from 'expo-router';
+import { FloatingActions } from '@/components/floatingActions/floatingActions';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const SKELETON_ITEMS = [0, 1, 2, 3, 4, 5];
 const productKey = (item: Product) => item.id;
@@ -46,6 +48,8 @@ const renderProduct = ({ item }: ListRenderItemInfo<Product>) => (
 );
 
 export default function ProductsScreen() {
+  const listRef = useRef<FlatList<Product>>(null);
+  const scroll = useScrollToTop();
   const pathname = usePathname();
   const isFocused = pathname === '/products' || pathname === '/(tabs)/products';
   const { data: catalog, isLoading: contextLoading } = useCatalogContext({ enabled: isFocused });
@@ -178,6 +182,8 @@ export default function ProductsScreen() {
         <FlatList
           numColumns={2}
           data={allProducts}
+          contentContainerStyle={{ paddingBottom: 144 }}
+          ref={listRef}
           keyExtractor={productKey}
           renderItem={renderProduct}
           onEndReached={() => {
@@ -191,6 +197,7 @@ export default function ProductsScreen() {
           }}
           onEndReachedThreshold={0.5}
           onScroll={(event) => {
+            scroll.onScroll(event);
             if (event.nativeEvent.contentOffset.y > 80) hasScrolledProducts.current = true;
           }}
           scrollEventThrottle={100}
@@ -214,6 +221,11 @@ export default function ProductsScreen() {
         />
       )}
 
+      <FloatingActions
+        hidden={isStoreSelectorOpen || isFilterOpen}
+        showBackToTop={scroll.showBackToTop && !contextLoading && !productsQuery.isLoading}
+        onBackToTop={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
+      />
       <ProductFilters
         key={`${isFilterOpen ? 'open' : 'closed'}-${catalog?.maxPrice ?? 0}-${selectedPrice?.[0] ?? ''}-${selectedPrice?.[1] ?? ''}`}
         categories={availableCategories}

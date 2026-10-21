@@ -6,6 +6,7 @@ export function useDeleteFromCart() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
+    mutationKey: ['deleteCartProduct'],
     mutationFn: (cartId: string | number) => deleteProductFromCart(cartId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['cart'] });

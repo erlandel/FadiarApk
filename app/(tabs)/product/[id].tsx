@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FloatingScrollView } from '@/components/floatingActions/floatingScrollView';
+import { FloatingActions } from '@/components/floatingActions/floatingActions';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { buildImageUrl } from '@/lib/api/config';
@@ -72,18 +75,20 @@ export default function ProductDetailScreen() {
   return (
     <View className="flex-1 bg-white">
       {isLoading ? (
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
+        <FloatingScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
           {detailHeader}
           <ProductDetailSkeleton />
-        </ScrollView>
+        </FloatingScrollView>
       ) : isError || !product ? (
         <View className="flex-1 items-center justify-center">
           {detailHeader}
           <Text className="text-primary mb-4 text-xl font-bold">Producto no encontrado</Text>
           <Button title="Volver" variant="outline" onPress={() => router.back()} />
+          <FloatingActions />
         </View>
       ) : (
-        <ScrollView
+        <FloatingScrollView
+          key={id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 24 }}>
           {detailHeader}
@@ -209,7 +214,7 @@ export default function ProductDetailScreen() {
                     })
                   }>
                   {addingToCart ? (
-                    <ActivityIndicator size="small" color={colors.white} />
+                    <LoadingSpinner size="small" color={colors.white} />
                   ) : (
                     <Icon
                       name="ShoppingCart"
@@ -301,7 +306,7 @@ export default function ProductDetailScreen() {
               </View>
             ) : null}
           </View>
-        </ScrollView>
+        </FloatingScrollView>
       )}
       <ImageViewer
         images={gallery}

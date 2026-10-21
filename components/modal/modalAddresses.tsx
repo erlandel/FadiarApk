@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 import { ChevronDown, X } from 'lucide-react-native';
 
 import { useLocation } from '@/hooks/location/useLocation';
@@ -211,7 +212,7 @@ export default function ModalAddresses({
               <Pressable onPress={handleSubmit} disabled={isPending} hitSlop={8}>
                 {isPending ? (
                   <View className="flex-row items-center">
-                    <ActivityIndicator size="small" color="#D69F04" />
+                    <LoadingSpinner size="small" color="#D69F04" />
                     <Text className="ml-1 text-base font-bold text-[#D69F04]">Guardar</Text>
                   </View>
                 ) : (
@@ -253,7 +254,7 @@ export default function ModalAddresses({
               onPress={(event) => event.stopPropagation()}>
               {loading && openDropdown === 'provinces' ? (
                 <View className="flex-1 items-center justify-center">
-                  <ActivityIndicator size="small" color="#D69F04" />
+                  <LoadingSpinner size="small" color="#D69F04" />
                 </View>
               ) : (
                 <FlatList

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -8,6 +7,7 @@ import {
   Text,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 
 import { MaterialIconThemeDependenciesUpdate } from '@/icons/custom';
 import { buildImageUrl } from '@/lib/api/config';
@@ -122,7 +122,7 @@ export default function AvatarPreview() {
           hitSlop={8}
         >
           {isPicking ? (
-            <ActivityIndicator
+            <LoadingSpinner
               size="small"
               color="#FFFFFF"
             />

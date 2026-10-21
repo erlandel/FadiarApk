@@ -1,12 +1,12 @@
 import { forwardRef } from 'react';
 import {
-  ActivityIndicator,
   Pressable,
   type PressableProps,
   Text,
 } from 'react-native';
 import { cn } from '@/utils/cn';
 import { colors } from '@/lib/theme/colors';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 
 export interface ButtonProps extends PressableProps {
   title: string;
@@ -53,7 +53,7 @@ export const Button = forwardRef<unknown, ButtonProps>(
         {...rest}
       >
         {loading ? (
-          <ActivityIndicator color={colors.white} />
+          <LoadingSpinner color={colors.white} />
         ) : (
           <Text className={cn('text-base font-semibold', styles.text, textClassName)}>
             {title}

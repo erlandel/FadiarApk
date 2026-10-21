@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { buildImageUrl } from '@/lib/api/config';
@@ -12,6 +12,7 @@ import { useCartStore } from '@/store/cartStore';
 import { toastWarning } from '@/messages/toast';
 import { QuantityStepper } from '@/components/product/quantityStepper';
 import { CustomIcon } from '@/icons/customIcon';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 
 export interface ProductCardProps {
   productId: string;
@@ -196,6 +197,7 @@ function ProductCardComponent({
           onPress={handleAddToCart}
           disabled={soldOut || loading}
           accessibilityLabel="Añadir al carrito"
+          accessibilityState={{ busy: loading, disabled: soldOut || loading }}
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -217,7 +219,7 @@ function ProductCardComponent({
           )}>
           {loading ? (
             <View className="h-5 w-5 items-center justify-center">
-              <ActivityIndicator size="small" color={colors.white} />
+              <LoadingSpinner />
             </View>
           ) : (
             <CustomIcon

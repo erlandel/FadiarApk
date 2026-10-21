@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Pressable, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, Text, View } from 'react-native';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 import { ChevronDown } from 'lucide-react-native';
 import { useLocation } from '@/hooks/location/useLocation';
 import { colors } from '@/lib/theme/colors';
@@ -94,7 +95,7 @@ export function ModalProductsByLocation({ onClose }: ModalProductsByLocationProp
 
       {isLoading ? (
         <View className="my-2 w-full items-center justify-center">
-          <ActivityIndicator size="large" color={colors.accent} />
+          <LoadingSpinner size="large" color={colors.accent} />
         </View>
       ) : (
         <View className="mb-4 gap-4 px-6">

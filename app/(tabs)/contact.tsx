@@ -1,4 +1,5 @@
-import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
+import { FloatingScrollView as ScrollView } from '@/components/floatingActions/floatingScrollView';
 import { ContactMap } from '@/components/contact/contactMap';
 import { CustomIcon } from '@/icons/customIcon';
 import { colors } from '@/lib/theme/colors';

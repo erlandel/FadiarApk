@@ -1,4 +1,5 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { FloatingScrollView as ScrollView } from '@/components/floatingActions/floatingScrollView';
 import Accordion from '@/components/accordion/accordion';
 import { homeDeliveryPolicy } from '@/data/shippingPolicy';
 

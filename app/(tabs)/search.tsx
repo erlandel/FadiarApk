@@ -16,6 +16,8 @@ import { colors } from '@/lib/theme/colors';
 import { useSearchProducts } from '@/hooks/products/useSearchProducts';
 import { useProductsByLocationStore } from '@/store/productsByLocationStore';
 import type { Product } from '@/types/product';
+import { FloatingActions } from '@/components/floatingActions/floatingActions';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const SKELETON_ITEMS = [0, 1, 2, 3];
 const productKey = (item: Product) => item.id;
@@ -45,6 +47,8 @@ const renderProduct = ({ item }: ListRenderItemInfo<Product>) => (
 );
 
 export default function SearchScreen() {
+  const listRef = useRef<FlatList<Product>>(null);
+  const scroll = useScrollToTop();
   const [query, setQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const hasScrolledResults = useRef(false);
@@ -115,6 +119,8 @@ export default function SearchScreen() {
         <FlatList
           numColumns={2}
           data={results}
+          contentContainerStyle={{ paddingBottom: 144 }}
+          ref={listRef}
           keyboardShouldPersistTaps="handled"
           onTouchStart={Keyboard.dismiss}
           keyExtractor={productKey}
@@ -125,6 +131,7 @@ export default function SearchScreen() {
           }}
           onEndReachedThreshold={0.5}
           onScroll={(event) => {
+            scroll.onScroll(event);
             if (event.nativeEvent.contentOffset.y > 80) hasScrolledResults.current = true;
           }}
           scrollEventThrottle={100}
@@ -151,6 +158,10 @@ export default function SearchScreen() {
           contentContainerClassName="px-2 py-2"
         />
       )}
+      <FloatingActions
+        showBackToTop={scroll.showBackToTop && !isLoading}
+        onBackToTop={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
+      />
     </View>
   );
 }

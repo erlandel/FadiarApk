@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
+import { FlashingTrash } from '@/components/loading/flashingTrash';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { buildImageUrl } from '@/lib/api/config';
@@ -137,13 +139,14 @@ export function OrderCard({ order, onInfo, onCancel, isCancelling = false }: Ord
             <ActionButton
               onPress={() => onCancel(order)}
               accessibilityLabel="Cancelar pedido"
+              disabled={isCancelling}
               onDark={open}
               destructive>
-              {isCancelling ? (
-                <ActivityIndicator color={open ? '#FDA4AF' : colors.error} />
-              ) : (
-                <Icon name="Trash2" size={22} color={open ? '#FDA4AF' : colors.error} />
-              )}
+              <FlashingTrash
+                active={isCancelling}
+                size={22}
+                color={open ? colors.white : '#DC2626'}
+              />
             </ActionButton>
           </ActionRow>
         </View>
@@ -190,7 +193,7 @@ export function OrderCard({ order, onInfo, onCancel, isCancelling = false }: Ord
 
           {productsQuery.isFetching ? (
             <View className="items-center py-6">
-              <ActivityIndicator size="large" color={colors.accent} />
+              <LoadingSpinner size="large" color={colors.accent} />
             </View>
           ) : products.length > 0 ? (
             <View style={{ marginTop: 8 }}>
@@ -273,12 +276,14 @@ function ActionButton({
   accessibilityLabel,
   onDark,
   destructive = false,
+  disabled = false,
   children,
 }: {
   onPress: () => void;
   accessibilityLabel: string;
   onDark: boolean;
   destructive?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -286,6 +291,8 @@ function ActionButton({
       onPress={onPress}
       hitSlop={8}
       accessibilityLabel={accessibilityLabel}
+      disabled={disabled}
+      accessibilityState={{ disabled, busy: disabled }}
       className={cn(
         'h-10 w-10 items-center justify-center rounded-xl border shadow-sm active:opacity-80',
         destructive

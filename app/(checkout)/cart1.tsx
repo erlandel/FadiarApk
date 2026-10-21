@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { FloatingScrollView as ScrollView } from '@/components/floatingActions/floatingScrollView';
 import { useRouter } from 'expo-router';
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs';
 import { CheckoutStepper } from '@/components/checkout/checkoutStepper';
@@ -41,7 +42,7 @@ export default function Cart1Screen() {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+      <ScrollView showCart={false} showsVerticalScrollIndicator={false} className="flex-1">
         <View className="px-4 pt-4">
           <Breadcrumbs items={[{ label: 'Inicio', href: '/(tabs)' }, { label: 'Carrito de Compras' }]} />
 

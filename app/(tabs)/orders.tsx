@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { BlurTargetView } from 'expo-blur';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { FloatingScrollView } from '@/components/floatingActions/floatingScrollView';
+import { LoadingDots } from '@/components/loading/loadingDots';
 import { ProtectedScreen } from '@/components/navigation/protectedScreen';
 import { OrderCard } from '@/components/orders/orderCard';
 import { CancelOrderModal } from '@/components/orders/cancelOrderModal';
@@ -18,6 +21,7 @@ const ITEMS_PER_PAGE = 10;
 
 export default function OrdersScreen() {
   const scrollRef = useRef<ScrollView>(null);
+  const blurTarget = useRef<View>(null);
   const [infoTarget, setInfoTarget] = useState<{
     orderId: string;
     delivery: boolean;
@@ -85,7 +89,8 @@ export default function OrdersScreen() {
   return (
     <ProtectedScreen>
       <View className="flex-1 bg-white">
-        <ScrollView
+        <BlurTargetView ref={blurTarget} style={{ flex: 1 }}>
+        <FloatingScrollView
           ref={scrollRef}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -100,9 +105,8 @@ export default function OrdersScreen() {
             <Text className="text-primary text-3xl font-bold">Mis Pedidos</Text>
 
             {isLoading ? (
-              <View className="items-center py-12">
-                <ActivityIndicator size="large" color={colors.accent} />
-                <Text className="text-muted mt-3 text-base font-bold">Cargando pedidos</Text>
+              <View className="items-center py-8">
+                <LoadingDots text="Cargando pedidos" />
               </View>
             ) : isError ? (
               <View className="items-center py-12">
@@ -151,7 +155,8 @@ export default function OrdersScreen() {
               </View>
             ) : null}
           </View>
-        </ScrollView>
+        </FloatingScrollView>
+        </BlurTargetView>
 
         <OrderInformationModal
           visible={Boolean(infoTarget || showDeliveryOverlay)}
@@ -167,6 +172,7 @@ export default function OrdersScreen() {
           }}
         />
         <CancelOrderModal
+          blurTarget={blurTarget}
           visible={Boolean(cancelTarget)}
           orderNumber={cancelTarget?.number || ''}
           onClose={() => setCancelTarget(null)}

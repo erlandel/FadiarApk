@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { FloatingScrollView as ScrollView } from '@/components/floatingActions/floatingScrollView';
 import { ProductSection } from '@/components/product/productSection';
 import { useFeaturedProducts } from '@/hooks/products/useFeaturedProducts';
 import { useUpcomingProducts } from '@/hooks/products/useUpcomingProducts';

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ToastRoot } from '@/messages/toastConfig';
-import { ActivityIndicator, FlatList, Modal, Pressable, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, Text, View } from 'react-native';
+import { LoadingSpinner } from '@/components/loading/loadingSpinner';
 import { Image } from 'expo-image';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -207,7 +208,7 @@ function ViewerSession({ images, initialIndex, onClose }: ImageViewerProps) {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <ActivityIndicator color={colors.white} />
+                  <LoadingSpinner color={colors.white} />
                 </View>
               ) : null}
               {loadState === 'error' ? (
